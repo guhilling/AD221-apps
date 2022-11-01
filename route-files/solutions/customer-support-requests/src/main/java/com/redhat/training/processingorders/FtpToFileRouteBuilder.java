@@ -1,9 +1,7 @@
 package com.redhat.training.processingorders;
 
 import org.apache.camel.builder.RouteBuilder;
-import org.springframework.stereotype.Component;
 
-@Component
 public class FtpToFileRouteBuilder extends RouteBuilder {
 
     @Override
