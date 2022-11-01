@@ -2,39 +2,56 @@ package com.redhat.training.processingorders;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.EndpointInject;
+import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.RoutesBuilder;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.test.spring.CamelSpringBootRunner;
-import org.apache.camel.test.spring.UseAdviceWith;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.apache.camel.test.spring.junit5.CamelSpringBootTest;
+import org.apache.camel.test.spring.junit5.CamelSpringTest;
+import org.apache.camel.test.spring.junit5.CamelSpringTestSupport;
+import org.apache.camel.test.spring.junit5.MockEndpoints;
+import org.apache.camel.test.spring.junit5.UseAdviceWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-@RunWith( CamelSpringBootRunner.class )
-@SpringBootTest
+@CamelSpringBootTest
+@EnableAutoConfiguration
+@CamelSpringTest
+@MockEndpoints
 @UseAdviceWith
 public class FtpToFileRouteBuilderTest {
 
-	@Autowired
-	private ProducerTemplate template;
+	@Produce("direct:ftp")
+	protected ProducerTemplate template;
 
 	@Autowired
-	private CamelContext context;
+	protected CamelContext context;
 
-	@EndpointInject( uri = "mock:file:customer_requests" )
-	MockEndpoint fileMock;
+	@EndpointInject( "mock:file:customer_requests" )
+	protected MockEndpoint fileMock;
 
-	@Before
+	@Configuration
+	@org.apache.camel.Configuration
+	public static class TestConfig {
+		@Bean
+		RoutesBuilder route() {
+			return new FtpToFileRouteBuilder();
+		}
+	}
+	@BeforeEach
 	public void setUp() throws Exception {
 		mockRouteEndpoints();
 		context.start();
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		context.stop();
 	}
@@ -49,19 +66,12 @@ public class FtpToFileRouteBuilderTest {
 	}
 
 	private void mockRouteEndpoints() throws Exception {
-		context.getRouteDefinition( "ftpRoute" )
-				.adviceWith( context, new AdviceWithRouteBuilder() {
-					@Override
-					public void configure() {
-						// Do not use the real FTP endpoint
-						replaceFromWith( "direct:ftp" );
-
-						// Do not write to a real file
-						interceptSendToEndpoint( "file:.*customer_requests.*" )
-								.skipSendToOriginalEndpoint()
-								.to( "mock:file:customer_requests" );
-					}
-				} );
+		AdviceWithRouteBuilder.adviceWith(context, "ftpRoute", route ->
+			route.replaceFromWith("direct:ftp"));
+		AdviceWithRouteBuilder.adviceWith(context, "ftpRoute", route ->
+			route.interceptSendToEndpoint( "file:.*customer_requests.*" )
+				 .skipSendToOriginalEndpoint()
+				 .to( "mock:file:customer_requests" ));
 	}
 
 }
