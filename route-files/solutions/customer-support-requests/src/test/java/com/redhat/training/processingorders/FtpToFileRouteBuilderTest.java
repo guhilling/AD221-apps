@@ -45,7 +45,7 @@ class FtpToFileRouteBuilderTest extends CamelQuarkusTestSupport {
 	}
 
 	@Test
-	public void testFTPFileContentIsWrittenToFile() throws Exception {
+	void testFTPFileContentIsWrittenToFile() throws Exception {
 		fileMock.message( 0 ).body().isEqualTo( "Hello World" );
 		template.sendBody( "direct:ftp", "Hello World" );
 		fileMock.assertIsSatisfied();
