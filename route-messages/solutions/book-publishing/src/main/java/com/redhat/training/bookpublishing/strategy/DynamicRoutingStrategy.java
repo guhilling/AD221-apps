@@ -1,6 +1,6 @@
 package com.redhat.training.bookpublishing.strategy;
 
-import org.apache.camel.language.XPath;
+import org.apache.camel.language.xpath.XPath;
 
 public class DynamicRoutingStrategy {
     public String compute(

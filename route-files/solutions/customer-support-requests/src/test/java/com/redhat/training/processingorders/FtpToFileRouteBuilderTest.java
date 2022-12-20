@@ -40,7 +40,8 @@ class FtpToFileRouteBuilderTest extends CamelQuarkusTestSupport {
 
     @Override
     protected void doBeforeEach(QuarkusTestMethodContext context) throws Exception {
-        AdviceWith.adviceWith(this.context, "ftpRoute", FtpToFileRouteBuilderTest::enhanceRoute);
+        AdviceWith.adviceWith(this.context, "ftpRoute",
+                              FtpToFileRouteBuilderTest::enhanceRoute);
     }
 
     @Test
