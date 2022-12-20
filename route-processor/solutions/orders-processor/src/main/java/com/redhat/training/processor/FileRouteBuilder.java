@@ -4,32 +4,26 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
-import org.springframework.stereotype.Component;
 
-@Component
 public class FileRouteBuilder extends RouteBuilder {
 
-    private static String separator = System.getProperty("line.separator");
+    private static final String SEPARATOR = System.getProperty("line.separator");
 
     @Override
-    public void configure() throws Exception {
-        from( "file:orders/incoming?noop=true" )
-                .process( new Processor() {
-                    public void process( Exchange exchange ) {
-                        String inputMessage = exchange.getIn().getBody( String.class );
+    public void configure() {
+        from( "file:///tmp/orders/incoming?noop=true" )
+                .process(exchange -> {
+                    String inputMessage = exchange.getIn().getBody( String.class );
 
-                        AtomicReference<Long> counter = new AtomicReference<>(1L);
+                    AtomicReference<Long> counter = new AtomicReference<>(1L);
 
-                        String processedLines = Stream.of(inputMessage.split(separator))
-                            .map( l -> counter.getAndUpdate( p -> p + 1 ).toString() + "," + l )
-                            .collect(Collectors.joining(separator));
+                    String processedLines = Stream.of(inputMessage.split(SEPARATOR))
+                        .map( l -> counter.getAndUpdate( p -> p + 1 ).toString() + "," + l )
+                        .collect(Collectors.joining(SEPARATOR));
 
-                        exchange.getIn().setBody( processedLines );
-                    }
-                } )
-                .to( "file:orders/outgoing?fileName=orders2.csv" );
+                    exchange.getIn().setBody( processedLines );
+                })
+                .to( "file:///tmp/orders/outgoing?fileName=orders2.csv" );
     }
 }
