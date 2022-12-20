@@ -7,12 +7,10 @@ import java.util.stream.Stream;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
-import org.springframework.stereotype.Component;
 
-@Component
 public class FileRouteBuilder extends RouteBuilder {
 
-    private static String separator = System.getProperty("line.separator");
+    private static final String SEPARATOR = System.getProperty("line.separator");
 
     @Override
     public void configure() throws Exception {
