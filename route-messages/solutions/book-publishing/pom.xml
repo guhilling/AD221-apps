@@ -7,11 +7,10 @@
     <name>processing-orders</name>
     <description>GE: Processing Orders with the File Component</description>
     <properties>
-        <quarkus.platform.version>2.13.3.Final</quarkus.platform.version>
+        <quarkus.platform.version>2.15.1.Final</quarkus.platform.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-        <fuse.version>7.10.0.fuse-sb2-7_10_0-00014-redhat-00001</fuse.version>
         <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
         <camel-quarkus.platform.version>${quarkus.platform.version}</camel-quarkus.platform.version>
 

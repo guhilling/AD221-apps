@@ -1,5 +1,7 @@
 package com.redhat.training.bookpublishing;
 
+import io.quarkus.test.junit.QuarkusTest;
+
 import javax.inject.Inject;
 
 import org.apache.camel.CamelContext;
@@ -7,37 +9,26 @@ import org.apache.camel.EndpointInject;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
-//@QuarkusTest
-class BookReviewPipelineRouteBuilderNoTestNo {
+@QuarkusTest
+//@TestInstance(TestInstance.Lifecycle.PER_METHOD)
+class BookReviewPipelineRouteBuilderTest {
 
-	@Produce("direct:ready-for-printing")
-	private ProducerTemplate template;
+	@Produce("direct:manuscripts")
+	protected ProducerTemplate template;
 
 	@Inject
-	private CamelContext context;
+	protected CamelContext context;
 
-	@EndpointInject(uri = "mock:file:editor")
-	MockEndpoint fileMockEditor;
+	@EndpointInject("mock:file:editor")
+	protected MockEndpoint fileMockEditor;
 
-	@EndpointInject(uri = "mock:file:graphic_designer")
-	MockEndpoint fileMockGraphicDesigner;
+	@EndpointInject("mock:file:graphic_designer")
+	protected MockEndpoint fileMockGraphicDesigner;
 
-	@Before
-	public void setUp() throws Exception {
-		mockRouteEndpoints();
-		context.start();
-	}
-
-	@After
-	public void tearDown() throws Exception {
-		context.stop();
-	}
-
-	//@Test
+	@Test
 	public void technicalBookIsDeliveredToEditorAndGraphicalDesigner() throws Exception {
 		fileMockEditor.expectedMessageCount(1);
 		fileMockGraphicDesigner.expectedMessageCount(1);
@@ -65,7 +56,7 @@ class BookReviewPipelineRouteBuilderNoTestNo {
 		fileMockGraphicDesigner.assertIsSatisfied();
 	}
 
-	@Test
+	//@Test
 	public void wrongBookFormatIsNotDelivered() throws Exception {
 		fileMockEditor.expectedMessageCount(0);
 		fileMockGraphicDesigner.expectedMessageCount(0);

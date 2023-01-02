@@ -1,6 +1,7 @@
 package com.redhat.training.bookpublishing;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.callback.QuarkusTestMethodContext;
 
 import javax.enterprise.inject.Produces;
@@ -17,17 +18,19 @@ import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import com.redhat.training.bookpublishing.route.BookPrintingPipelineRouteBuilder;
 
 @QuarkusTest
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class BookPrintingPipelineRouteBuilderTest extends CamelQuarkusTestSupport {
-
-	@Produce("direct:ready-for-printing")
-	protected ProducerTemplate template;
 
 	@Inject
 	protected CamelContext context;
+
+	@Produce("direct:ready-for-printing")
+	protected ProducerTemplate template;
 
 	@EndpointInject("mock:file:technical")
 	protected MockEndpoint fileMockTechnical;
@@ -63,7 +66,7 @@ class BookPrintingPipelineRouteBuilderTest extends CamelQuarkusTestSupport {
 		fileMockNovel.assertIsSatisfied();
 	}
 
-	//@Test
+	@Test
 	void novelBookIsDeliveredToNovelDirectory() throws Exception {
 		fileMockTechnical.expectedMessageCount(0);
 		fileMockNovel.expectedMessageCount(1);
