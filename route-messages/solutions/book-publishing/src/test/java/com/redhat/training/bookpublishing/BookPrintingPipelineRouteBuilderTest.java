@@ -1,14 +1,10 @@
 package com.redhat.training.bookpublishing;
 
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.TestProfile;
-import io.quarkus.test.junit.callback.QuarkusTestMethodContext;
 
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 import org.apache.camel.CamelContext;
-import org.apache.camel.Configuration;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
@@ -18,12 +14,10 @@ import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 
 import com.redhat.training.bookpublishing.route.BookPrintingPipelineRouteBuilder;
 
 @QuarkusTest
-@TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class BookPrintingPipelineRouteBuilderTest extends CamelQuarkusTestSupport {
 
 	@Inject
@@ -38,22 +32,15 @@ class BookPrintingPipelineRouteBuilderTest extends CamelQuarkusTestSupport {
 	@EndpointInject("mock:file:novel")
 	protected MockEndpoint fileMockNovel;
 
-	@Configuration
-	public static class TestConfig {
-		@Produces
-		RoutesBuilder route() {
-			return new BookPrintingPipelineRouteBuilder();
-		}
-	}
-
 	@Override
-	protected void doBeforeEach(QuarkusTestMethodContext context) throws Exception {
-		AdviceWith.adviceWith(this.context, "book-printing-pipeline",
-							  BookPrintingPipelineRouteBuilderTest::enhanceRoute);
+	protected RoutesBuilder createRouteBuilder() {
+		return new BookPrintingPipelineRouteBuilder();
 	}
 
 	@Test
 	void technicalBookIsDeliveredToTechnicalDirectory() throws Exception {
+		AdviceWith.adviceWith(context(), "book-printing-pipeline",
+							  BookPrintingPipelineRouteBuilderTest::adviceRoute);
 		fileMockTechnical.expectedMessageCount(1);
 		fileMockNovel.expectedMessageCount(0);
 
@@ -68,6 +55,8 @@ class BookPrintingPipelineRouteBuilderTest extends CamelQuarkusTestSupport {
 
 	@Test
 	void novelBookIsDeliveredToNovelDirectory() throws Exception {
+		AdviceWith.adviceWith(context(), "book-printing-pipeline",
+							  BookPrintingPipelineRouteBuilderTest::adviceRoute);
 		fileMockTechnical.expectedMessageCount(0);
 		fileMockNovel.expectedMessageCount(1);
 
@@ -80,7 +69,7 @@ class BookPrintingPipelineRouteBuilderTest extends CamelQuarkusTestSupport {
 		fileMockNovel.assertIsSatisfied();
 	}
 
-	private static void enhanceRoute(AdviceWithRouteBuilder route) {
+	private static void adviceRoute(AdviceWithRouteBuilder route) {
 		route.replaceFromWith("direct:ready-for-printing");
 
 		route.interceptSendToEndpoint("file://data/printing-services/technical")

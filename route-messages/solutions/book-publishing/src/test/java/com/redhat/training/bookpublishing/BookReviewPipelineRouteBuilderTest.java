@@ -8,13 +8,17 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.RoutesBuilder;
+import org.apache.camel.builder.AdviceWith;
+import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+
+import com.redhat.training.bookpublishing.route.BookReviewPipelineRouteBuilder;
 
 @QuarkusTest
-//@TestInstance(TestInstance.Lifecycle.PER_METHOD)
-class BookReviewPipelineRouteBuilderTest {
+class BookReviewPipelineRouteBuilderTest extends CamelQuarkusTestSupport {
 
 	@Produce("direct:manuscripts")
 	protected ProducerTemplate template;
@@ -28,8 +32,14 @@ class BookReviewPipelineRouteBuilderTest {
 	@EndpointInject("mock:file:graphic_designer")
 	protected MockEndpoint fileMockGraphicDesigner;
 
+	@Override
+	protected RoutesBuilder createRouteBuilder() {
+		return new BookReviewPipelineRouteBuilder();
+	}
+
 	@Test
-	public void technicalBookIsDeliveredToEditorAndGraphicalDesigner() throws Exception {
+	void technicalBookIsDeliveredToEditorAndGraphicalDesigner() throws Exception {
+		doAdvice();
 		fileMockEditor.expectedMessageCount(1);
 		fileMockGraphicDesigner.expectedMessageCount(1);
 
@@ -42,8 +52,9 @@ class BookReviewPipelineRouteBuilderTest {
 		fileMockGraphicDesigner.assertIsSatisfied();
 	}
 
-	//@Test
-	public void novelBookIsDeliveredToEditor() throws Exception {
+	@Test
+	void novelBookIsDeliveredToEditor() throws Exception {
+		doAdvice();
 		fileMockEditor.expectedMessageCount(1);
 		fileMockGraphicDesigner.expectedMessageCount(0);
 
@@ -56,8 +67,9 @@ class BookReviewPipelineRouteBuilderTest {
 		fileMockGraphicDesigner.assertIsSatisfied();
 	}
 
-	//@Test
-	public void wrongBookFormatIsNotDelivered() throws Exception {
+	@Test
+	void wrongBookFormatIsNotDelivered() throws Exception {
+		doAdvice();
 		fileMockEditor.expectedMessageCount(0);
 		fileMockGraphicDesigner.expectedMessageCount(0);
 
@@ -70,27 +82,21 @@ class BookReviewPipelineRouteBuilderTest {
 		fileMockGraphicDesigner.assertIsSatisfied();
 	}
 
-	private void mockRouteEndpoints() throws Exception {
-/*
-		context.getRouteDefinition("book-review-pipeline")
-		    .adviceWith(
-			    context,
-				new AdviceWithRouteBuilder() {
-					@Override
-					public void configure() {
-						replaceFromWith( "direct:manuscripts" );
+	private void doAdvice() throws Exception {
+		AdviceWith.adviceWith(context(), "book-review-pipeline",
+							  BookReviewPipelineRouteBuilderTest::adviceRoute);
+	}
 
-						interceptSendToEndpoint("file://data/pipeline/editor")
-						    .skipSendToOriginalEndpoint()
-							.to("mock:file:editor");
+	private static void adviceRoute(AdviceWithRouteBuilder route) {
+		route.replaceFromWith( "direct:manuscripts" );
 
-						interceptSendToEndpoint("file://data/pipeline/graphic-designer")
-							.skipSendToOriginalEndpoint()
-							.to("mock:file:graphic_designer");
-					}
-				}
-			);
-*/
+		route.interceptSendToEndpoint("file://data/pipeline/editor")
+			.skipSendToOriginalEndpoint()
+			.to("mock:file:editor");
+
+		route.interceptSendToEndpoint("file://data/pipeline/graphic-designer")
+			.skipSendToOriginalEndpoint()
+			.to("mock:file:graphic_designer");
 	}
 
 	private String technicalContent() {
