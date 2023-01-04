@@ -1,68 +1,73 @@
 package com.redhat.training.testkit;
 
-import static org.junit.Assert.assertTrue;
+import io.quarkus.test.junit.QuarkusTest;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import javax.inject.Inject;
 
 import org.apache.camel.ConsumerTemplate;
 import org.apache.camel.ProducerTemplate;
-import org.apache.camel.test.junit4.TestSupport;
-import org.apache.camel.test.spring.CamelSpringBootRunner;
-import org.junit.Test;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.Resource;
+import org.apache.camel.RoutesBuilder;
+import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-// TODO: add annotations
-@RunWith( CamelSpringBootRunner.class )
-@SpringBootTest( classes = Application.class )
-public class HtmlRouteBuilderTest {
+@QuarkusTest
+class HtmlRouteBuilderTest extends CamelQuarkusTestSupport {
 
-	@Autowired
-	private ProducerTemplate producerTemplate;
+	public static final File WARNING_FILE = new File("out/latest-warning.txt");
+	public static final File ERROR_FILE = new File("out/latest-error.txt");
+	private static final String warningsHtml;
+	private static final String errorsHtml;
 
-	@Autowired
-	private ConsumerTemplate consumerTemplate;
+	static {
+		try {
+			warningsHtml = Files.readString(Path.of("", "src/main/resources/test_warnings.html"));
+			errorsHtml = Files.readString(Path.of("", "src/main/resources/test_errors.html"));
+		} catch (IOException ioe) {
+			throw new RuntimeException(ioe);
+		}
+	}
 
-	@Value( "classpath:test_errors.html" )
-	Resource errors;
+	@Inject
+	protected ProducerTemplate producerTemplate;
 
-	@Value( "classpath:test_warnings.html" )
-	Resource warnings;
+	@Inject
+	protected ConsumerTemplate consumerTemplate;
 
-	@AfterEach
-	public void after() throws IOException {
-		TestSupport.deleteDirectory( "out" );
+	@Override
+	protected RoutesBuilder createRouteBuilder() {
+		return new HtmlRouteBuilder();
+	}
+
+	@BeforeEach
+	void cleanUp() {
+		WARNING_FILE.delete();
+		ERROR_FILE.delete();
 	}
 
 	@Test
-	public void testRouteWritesLatestWarningToFile() throws Exception {
-		String warningsHtml = new String( warnings.getInputStream().readAllBytes() );
-
+	void testRouteWritesLatestWarningToFile() {
 		producerTemplate.sendBody( "direct:parseHtmlErrors", warningsHtml );
 
-		File latestWarningFile = new File( "out/latest-warning.txt" );
-		assertTrue( "out/latest-warning.txt does not exist", latestWarningFile.exists() );
+		assertTrue(WARNING_FILE.exists(), "out/latest-warning.txt does not exist");
 	}
 
 	@Test
-	public void testRouteWritesLatestErrorToFile() throws Exception {
-		String errorsHtml = new String( errors.getInputStream().readAllBytes() );
-
+	void testRouteWritesLatestErrorToFile() {
 		producerTemplate.sendBody( "direct:parseHtmlErrors", errorsHtml );
 
-		File latestWarningFile = new File( "out/latest-error.txt" );
-		assertTrue( "out/latest-error.txt does not exist", latestWarningFile.exists() );
+		assertTrue(ERROR_FILE.exists(), "out/latest-error.txt does not exist");
 	}
 
 	@Test
-	public void testRouteParsesLatestWarningText() throws Exception {
-		String warningsHtml = new String( warnings.getInputStream().readAllBytes() );
-
+	void testRouteParsesLatestWarningText() throws Exception {
 		producerTemplate.sendBody( "direct:parseHtmlErrors", warningsHtml );
 
 		Thread.sleep(2);
@@ -73,19 +78,12 @@ public class HtmlRouteBuilderTest {
 
 
 	@Test
-	public void testRouteParsesLatestErrorText() throws Exception {
-		// TODO: read errors file
-		String errorsHtml = new String( errors.getInputStream().readAllBytes() );
-
-		// TODO: send errorsHtml as the body to direct:parseHtmlErrors
+	void testRouteParsesLatestErrorText() throws Exception {
 		producerTemplate.sendBody( "direct:parseHtmlErrors", errorsHtml );
 
 		Thread.sleep(2);
 
-		// TODO: receive the body from file:out
 		String body = consumerTemplate.receiveBody( "file:out", String.class );
-
-		// TODO: assert body contains a portion of the first article
 		assertTrue( body.contains( "Exception occurred during execution on the exchange" ) );
 	}
 

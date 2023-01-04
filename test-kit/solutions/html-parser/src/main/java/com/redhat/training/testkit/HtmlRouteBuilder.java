@@ -1,16 +1,14 @@
 package com.redhat.training.testkit;
 
-import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
-import org.springframework.stereotype.Component;
 
-@Component
 public class HtmlRouteBuilder extends RouteBuilder {
 
     @Override
-    public void configure() throws Exception {
+    public void configure() {
 
         from( "direct:parseHtmlErrors" )
+            .id("parse-html")
             .choice()
                 .when().xpath( "//div[@id='warnings']" )
                     .to( "language:xpath://body/div/ul/li[1]/text()" )
