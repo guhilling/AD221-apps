@@ -1,34 +1,45 @@
 package com.redhat.training;
 
-public class CommandConfigurationRouteBuilderTest {
+import io.quarkus.test.junit.QuarkusTest;
 
-//	@Autowired
-//	private ConsumerTemplate consumerTemplate;
-//
-//	@Autowired
-//	private CamelContext context;
-//
-//
-//	@Test
-//	public void testRoute() throws Exception {
-//
-//		RouteDefinition airPurifierConfigRouteDef = context.getRouteDefinition("air-purifier-configuration-route");
-//
-//		airPurifierConfigRouteDef.adviceWith(context, new AdviceWithRouteBuilder() {
-//				@Override
-//				public void configure() {
-//					interceptSendToEndpoint("direct:logReturnCode")
-//					.skipSendToOriginalEndpoint()
-//					.to("direct:output");
-//				}
-//			}
-//		);
-//
-//		context.startRoute(airPurifierConfigRouteDef.getId());
-//
-//		Assert.assertEquals(200, consumerTemplate.receive("direct:output").getIn().getBody());
-//
-//		context.stopRoute(airPurifierConfigRouteDef.getId());
-//	}
+import javax.inject.Inject;
+
+import org.apache.camel.ConsumerTemplate;
+import org.apache.camel.RoutesBuilder;
+import org.apache.camel.builder.AdviceWith;
+import org.apache.camel.builder.AdviceWithRouteBuilder;
+import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.redhat.training.route.CommandConfigurationRouteBuilder;
+
+@QuarkusTest
+class CommandConfigurationRouteBuilderTest extends CamelQuarkusTestSupport {
+
+	@Inject
+	protected ConsumerTemplate consumerTemplate;
+
+	@Override
+	protected RoutesBuilder createRouteBuilder() {
+		return new CommandConfigurationRouteBuilder();
+	}
+
+	@Test
+	void testRoute() {
+		Assertions.assertEquals(200, consumerTemplate.receive("direct:output").getIn().getBody());
+	}
+
+	@BeforeEach
+	void doAdvice() throws Exception {
+		AdviceWith.adviceWith(context(), "air-purifier-configuration-route", CommandConfigurationRouteBuilderTest::adviceRoute);
+	}
+
+	private static void adviceRoute(AdviceWithRouteBuilder route) {
+		route.interceptSendToEndpoint("direct:logReturnCode")
+			.skipSendToOriginalEndpoint()
+			.to("direct:output");
+	}
 
 }

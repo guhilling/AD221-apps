@@ -1,7 +1,6 @@
 package com.redhat.training.processingorders;
 
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.callback.QuarkusTestMethodContext;
 
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
@@ -16,6 +15,7 @@ import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
@@ -38,10 +38,9 @@ class FtpToFileRouteBuilderTest extends CamelQuarkusTestSupport {
         }
     }
 
-    @Override
-    protected void doBeforeEach(QuarkusTestMethodContext context) throws Exception {
-        AdviceWith.adviceWith(this.context, "ftpRoute",
-                              FtpToFileRouteBuilderTest::enhanceRoute);
+    @BeforeEach
+    void doAdvice() throws Exception {
+        AdviceWith.adviceWith(context(), "ftpRoute", FtpToFileRouteBuilderTest::enhanceRoute);
     }
 
     @Test

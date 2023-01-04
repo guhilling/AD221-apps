@@ -2,9 +2,6 @@ package com.redhat.training.bookpublishing;
 
 import io.quarkus.test.junit.QuarkusTest;
 
-import javax.inject.Inject;
-
-import org.apache.camel.CamelContext;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
@@ -20,9 +17,6 @@ import com.redhat.training.bookpublishing.route.BookPrintingPipelineRouteBuilder
 
 @QuarkusTest
 class BookPrintingPipelineRouteBuilderTest extends CamelQuarkusTestSupport {
-
-	@Inject
-	protected CamelContext context;
 
 	@Produce("direct:ready-for-printing")
 	protected ProducerTemplate template;
@@ -68,8 +62,7 @@ class BookPrintingPipelineRouteBuilderTest extends CamelQuarkusTestSupport {
 
 	@BeforeEach
 	void doAdvice() throws Exception {
-		AdviceWith.adviceWith(context(), "book-printing-pipeline",
-							  BookPrintingPipelineRouteBuilderTest::adviceRoute);
+		AdviceWith.adviceWith(context(), "book-printing-pipeline", BookPrintingPipelineRouteBuilderTest::adviceRoute);
 	}
 
 	private static void adviceRoute(AdviceWithRouteBuilder route) {
