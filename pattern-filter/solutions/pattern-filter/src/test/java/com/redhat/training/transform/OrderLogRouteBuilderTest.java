@@ -1,26 +1,34 @@
 package com.redhat.training.transform;
 
-//@RunWith(CamelSpringBootRunner.class)
-//@SpringBootTest(classes = {Application.class},
-//    properties = { "camel.springboot.java-routes-include-pattern=**/Order*"})
-public class OrderLogRouteBuilderTest {
+import io.quarkus.test.junit.QuarkusTest;
 
-//    @Autowired
-//    private ProducerTemplate producerTemplate;
-//
-//    @EndpointInject(uri = "mock:orderLog")
-//    private MockEndpoint mockOrderLog;
-//
-//    @Test
-//    public void testLogOrderRoute() throws Exception {
-//        // Sets an assertion
-//        mockOrderLog.expectedMessageCount(1);
-//
-//        // Sends a message to the start component
-//        producerTemplate.sendBody("direct:jsonOrderLog", null);
-//
-//        // Verifies that the mock component received 1 message
-//        mockOrderLog.assertIsSatisfied();
-//    }
+import javax.inject.Inject;
+
+import org.apache.camel.EndpointInject;
+import org.apache.camel.ProducerTemplate;
+import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
+import org.junit.jupiter.api.Test;
+
+@QuarkusTest
+class OrderLogRouteBuilderTest extends CamelQuarkusTestSupport {
+
+    @Inject
+    protected ProducerTemplate producerTemplate;
+
+    @EndpointInject("mock:orderLog")
+    protected MockEndpoint mockOrderLog;
+
+    @Test
+    void testLogOrderRoute() throws Exception {
+        // Sets an assertion
+        mockOrderLog.expectedMessageCount(1);
+
+        // Sends a message to the start component
+        producerTemplate.sendBody("direct:jsonOrderLog", null);
+
+        // Verifies that the mock component received 1 message
+        mockOrderLog.assertIsSatisfied();
+    }
 
 }
