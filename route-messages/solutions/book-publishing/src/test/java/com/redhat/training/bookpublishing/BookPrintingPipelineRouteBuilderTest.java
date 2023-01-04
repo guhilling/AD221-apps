@@ -13,6 +13,7 @@ import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.redhat.training.bookpublishing.route.BookPrintingPipelineRouteBuilder;
@@ -39,8 +40,6 @@ class BookPrintingPipelineRouteBuilderTest extends CamelQuarkusTestSupport {
 
 	@Test
 	void technicalBookIsDeliveredToTechnicalDirectory() throws Exception {
-		AdviceWith.adviceWith(context(), "book-printing-pipeline",
-							  BookPrintingPipelineRouteBuilderTest::adviceRoute);
 		fileMockTechnical.expectedMessageCount(1);
 		fileMockNovel.expectedMessageCount(0);
 
@@ -55,8 +54,6 @@ class BookPrintingPipelineRouteBuilderTest extends CamelQuarkusTestSupport {
 
 	@Test
 	void novelBookIsDeliveredToNovelDirectory() throws Exception {
-		AdviceWith.adviceWith(context(), "book-printing-pipeline",
-							  BookPrintingPipelineRouteBuilderTest::adviceRoute);
 		fileMockTechnical.expectedMessageCount(0);
 		fileMockNovel.expectedMessageCount(1);
 
@@ -67,6 +64,12 @@ class BookPrintingPipelineRouteBuilderTest extends CamelQuarkusTestSupport {
 
 		fileMockTechnical.assertIsSatisfied();
 		fileMockNovel.assertIsSatisfied();
+	}
+
+	@BeforeEach
+	void doAdvice() throws Exception {
+		AdviceWith.adviceWith(context(), "book-printing-pipeline",
+							  BookPrintingPipelineRouteBuilderTest::adviceRoute);
 	}
 
 	private static void adviceRoute(AdviceWithRouteBuilder route) {

@@ -13,6 +13,7 @@ import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.redhat.training.bookpublishing.route.BookReviewPipelineRouteBuilder;
@@ -39,7 +40,6 @@ class BookReviewPipelineRouteBuilderTest extends CamelQuarkusTestSupport {
 
 	@Test
 	void technicalBookIsDeliveredToEditorAndGraphicalDesigner() throws Exception {
-		doAdvice();
 		fileMockEditor.expectedMessageCount(1);
 		fileMockGraphicDesigner.expectedMessageCount(1);
 
@@ -54,7 +54,6 @@ class BookReviewPipelineRouteBuilderTest extends CamelQuarkusTestSupport {
 
 	@Test
 	void novelBookIsDeliveredToEditor() throws Exception {
-		doAdvice();
 		fileMockEditor.expectedMessageCount(1);
 		fileMockGraphicDesigner.expectedMessageCount(0);
 
@@ -69,7 +68,6 @@ class BookReviewPipelineRouteBuilderTest extends CamelQuarkusTestSupport {
 
 	@Test
 	void wrongBookFormatIsNotDelivered() throws Exception {
-		doAdvice();
 		fileMockEditor.expectedMessageCount(0);
 		fileMockGraphicDesigner.expectedMessageCount(0);
 
@@ -82,7 +80,8 @@ class BookReviewPipelineRouteBuilderTest extends CamelQuarkusTestSupport {
 		fileMockGraphicDesigner.assertIsSatisfied();
 	}
 
-	private void doAdvice() throws Exception {
+	@BeforeEach
+	void doAdvice() throws Exception {
 		AdviceWith.adviceWith(context(), "book-review-pipeline",
 							  BookReviewPipelineRouteBuilderTest::adviceRoute);
 	}
