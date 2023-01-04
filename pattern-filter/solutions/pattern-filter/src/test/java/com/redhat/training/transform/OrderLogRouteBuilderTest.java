@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import org.apache.camel.EndpointInject;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.RoutesBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,11 @@ class OrderLogRouteBuilderTest extends CamelQuarkusTestSupport {
 
     @EndpointInject("mock:orderLog")
     protected MockEndpoint mockOrderLog;
+
+    @Override
+    protected RoutesBuilder createRouteBuilder() {
+        return new OrderLogRouteBuilder();
+    }
 
     @Test
     void testLogOrderRoute() throws Exception {

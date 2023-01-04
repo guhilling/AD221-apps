@@ -1,72 +1,54 @@
 package com.redhat.training.combine;
 
-import org.apache.camel.CamelContext;
+import io.quarkus.test.junit.QuarkusTest;
+
+import javax.inject.Inject;
+
 import org.apache.camel.EndpointInject;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.RoutesBuilder;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.test.spring.CamelSpringBootRunner;
-import org.apache.camel.test.spring.UseAdviceWith;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-@RunWith( CamelSpringBootRunner.class )
-@SpringBootTest( properties = { "camel.springboot.java-routes-include-pattern=**/CombineRoute*" } )
-@UseAdviceWith
-@DirtiesContext( classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD )
-public class PatternCombineRouteBuilderTest {
+@QuarkusTest
+class PatternCombineRouteBuilderTest extends CamelQuarkusTestSupport {
 	private static final String SEPARATOR = System.getProperty( "line.separator" );
 	private static final String MOCK_FILE_OUTPUT = "mock:file:output";
 	private static final String DIRECT_INPUT = "direct:input";
 
-	@Autowired
-	private ProducerTemplate template;
+	@Inject
+	protected ProducerTemplate template;
 
-	@Autowired
-	private CamelContext context;
+	@EndpointInject(MOCK_FILE_OUTPUT)
+	protected MockEndpoint outputFileMock;
 
-	@EndpointInject( uri = MOCK_FILE_OUTPUT )
-	MockEndpoint outputFileMock;
-
-	@Before
-	public void setUp() throws Exception {
-		mockRouteEndpoints();
-		context.start();
-	}
-
-	@After
-	public void tearDown() throws Exception {
-		context.stop();
+	@Override
+	protected RoutesBuilder createRouteBuilder() {
+		return new CombineRouteBuilder();
 	}
 
 	@Test
-	public void tenLinesOneGroup() throws Exception {
+	void tenLinesOneGroup() throws Exception {
 		outputFileMock.expectedMessageCount( 1 );
-
 		template.sendBody( DIRECT_INPUT, content() );
-
 		outputFileMock.assertIsSatisfied();
 	}
 
-	private void mockRouteEndpoints() throws Exception {
-		context.getRouteDefinition( "split-combine-pipeline" )
-				.adviceWith(
-						context,
-						new AdviceWithRouteBuilder() {
-							@Override
-							public void configure() {
-								replaceFromWith( DIRECT_INPUT );
+	@BeforeEach
+	void doAdvice() throws Exception {
+		AdviceWith.adviceWith(context(), "split-combine-pipeline", PatternCombineRouteBuilderTest::adviceRoute);
+	}
 
-								interceptSendToEndpoint( "file:orders/outgoing?fileName=orders2.csv" )
-										.skipSendToOriginalEndpoint()
-										.to( MOCK_FILE_OUTPUT );
-							}
-						} );
+	private static void adviceRoute(AdviceWithRouteBuilder route) {
+		route.replaceFromWith( DIRECT_INPUT );
+
+		route.interceptSendToEndpoint( "file:orders/outgoing?fileName=orders2.csv" )
+			.skipSendToOriginalEndpoint()
+			.to( MOCK_FILE_OUTPUT );
 	}
 
 	private String content() {
