@@ -5,8 +5,7 @@ import org.apache.camel.builder.RouteBuilder;
 public class TransformRouteBuilder extends RouteBuilder {
 
     @Override
-    public void configure() throws Exception {
-
+    public void configure() {
         from("activemq:queue:orderInput")
             .routeId("Transforming Orders")
             .marshal().jaxb()
@@ -16,7 +15,6 @@ public class TransformRouteBuilder extends RouteBuilder {
             .filter().jsonpath("$[?(@.delivered !='true')]")
             .wireTap("direct:jsonOrderLog")
         .to("mock:fulfillmentSystem");
-
     }
 
 }
