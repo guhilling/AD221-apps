@@ -1,52 +1,60 @@
 package com.redhat.training.downloader;
 
+import io.quarkus.test.junit.QuarkusTest;
+
+import javax.inject.Inject;
+
 import org.apache.camel.EndpointInject;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.RoutesBuilder;
+import org.apache.camel.builder.AdviceWith;
+import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.test.spring.CamelSpringBootRunner;
-import org.apache.camel.test.spring.MockEndpointsAndSkip;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-@RunWith( CamelSpringBootRunner.class )
-@SpringBootTest(properties = {
-    // TODO: add properties
-    "http_route.start=direct:start",
-    "http_route.server=http4://test-fake"
-})
+@QuarkusTest
+class HttpRouteBuilderTest extends CamelQuarkusTestSupport {
 
-// TODO: add @MockEndpointsAndSkip annotation
-@MockEndpointsAndSkip("http.*|file:out.*")
-public class HttpRouteBuilderTest {
+    @Inject
+    protected ProducerTemplate template;
 
-    @Autowired
-    private ProducerTemplate template;
+    @EndpointInject("mock:http:localhost")
+    protected MockEndpoint httpMockEndpoint;
 
-    // TODO: add @EndpointInject annotation
-    @EndpointInject(uri = "mock:http4:test-fake/greeting")
-    MockEndpoint httpMockEndpoint;
+    @EndpointInject("mock:file:out")
+    protected MockEndpoint fileMockEndpoint;
 
-    // TODO: add @EndpointInject annotation
-    @EndpointInject(uri = "mock:file:out")
-    MockEndpoint fileMockEndpoint;
+    @Override
+    protected RoutesBuilder createRouteBuilder() {
+        return new HttpRouteBuilder();
+    }
 
     @Test
-    public void testFileRecievesContentFromHttpClient() throws InterruptedException {
-        // TODO: add httpMockEndpoint behaviour
-        httpMockEndpoint.whenAnyExchangeReceived(e -> {
-            e.getOut().setBody("Hello test!");
-        });
+    void testFileRecievesContentFromHttpClient() throws InterruptedException {
+        httpMockEndpoint.whenAnyExchangeReceived(e -> e.getIn().setBody("Hello test!"));
 
-        // TODO: add fileMockEndpoint expectations
         fileMockEndpoint.expectedMessageCount(1);
         fileMockEndpoint.expectedBodiesReceived("Hello test!");
 
         template.sendBody("direct:start", null);
 
-        // TODO: assert fileMockEndpoint
         fileMockEndpoint.assertIsSatisfied();
+    }
+
+    @BeforeEach
+    void doAdvice() throws Exception {
+        AdviceWith.adviceWith(context(), "http-route", this::adviceRoute);
+    }
+
+    private void adviceRoute(AdviceWithRouteBuilder route) {
+        route.interceptSendToEndpoint("http://localhost/greeting")
+             .skipSendToOriginalEndpoint()
+             .to("mock:http:localhost");
+        route.interceptSendToEndpoint("file:out?fileName=response.txt")
+             .skipSendToOriginalEndpoint()
+             .to("mock:file:out");
     }
 
 }
