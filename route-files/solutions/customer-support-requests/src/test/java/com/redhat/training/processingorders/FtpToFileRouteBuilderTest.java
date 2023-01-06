@@ -2,11 +2,9 @@ package com.redhat.training.processingorders;
 
 import io.quarkus.test.junit.QuarkusTest;
 
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 import org.apache.camel.CamelContext;
-import org.apache.camel.Configuration;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
@@ -30,17 +28,14 @@ class FtpToFileRouteBuilderTest extends CamelQuarkusTestSupport {
     @EndpointInject("mock:file:customer_requests")
     protected MockEndpoint fileMock;
 
-    @Configuration
-    public static class TestConfig {
-        @Produces
-        RoutesBuilder route() {
-            return new FtpToFileRouteBuilder();
-        }
-    }
-
     @BeforeEach
     void doAdvice() throws Exception {
         AdviceWith.adviceWith(context(), "ftpRoute", FtpToFileRouteBuilderTest::enhanceRoute);
+    }
+
+    @Override
+    protected RoutesBuilder createRouteBuilder() {
+        return new FtpToFileRouteBuilder();
     }
 
     @Test
