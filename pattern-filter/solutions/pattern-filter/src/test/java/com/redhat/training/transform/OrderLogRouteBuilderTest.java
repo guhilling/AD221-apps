@@ -21,8 +21,11 @@ class OrderLogRouteBuilderTest extends CamelQuarkusTestSupport {
     protected MockEndpoint mockOrderLog;
 
     @Override
-    protected RoutesBuilder createRouteBuilder() {
-        return new OrderLogRouteBuilder();
+    protected RoutesBuilder[] createRouteBuilders() {
+        return new RoutesBuilder[] {
+            new SampleDataRouteBuilder(),
+            new OrderLogRouteBuilder()
+        };
     }
 
     @Test

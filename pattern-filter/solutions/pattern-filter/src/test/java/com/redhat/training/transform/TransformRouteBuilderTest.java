@@ -23,15 +23,18 @@ class TransformRouteBuilderTest extends CamelQuarkusTestSupport {
     protected MockEndpoint mockFulfillmentSystem;
 
     @Override
-    protected RoutesBuilder createRouteBuilder() {
-        return new TransformRouteBuilder();
+    protected RoutesBuilder[] createRouteBuilders() {
+        System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES", "*");
+        return new RoutesBuilder[] {
+            new TransformRouteBuilder()
+        };
     }
 
     @Test
     void testLogOrderRoute() throws InterruptedException {
-        String exectedJson = "{\"orderItems\":[{\"extPrice\":\"110\",\"id\":\"2\"},{\"extPrice\":\"110\",\"id\":\"3\"}],\"customer\":{\"admin\":\"false\",\"email\":\"tanderson@email.com\",\"firstName\":\"Tony\",\"lastName\":\"Anderson\",\"password\":\"password\",\"username\":\"tanderson\"},\"delivered\":\"true\",\"id\":\"2\"}";
+        String exectedJson = "{\"orderItems\":[{\"extPrice\":\"110\",\"id\":\"2\"},{\"extPrice\":\"110\",\"id\":\"3\"}],\"customer\":{\"admin\":\"false\",\"email\":\"tanderson@email.com\",\"firstName\":\"Tony\",\"lastName\":\"Anderson\",\"password\":\"password\",\"username\":\"tanderson\"},\"delivered\":\"false\",\"id\":\"1\"}";
 
-        mockFulfillmentSystem.expectedBodyReceived();
+        mockFulfillmentSystem.expectedBodiesReceived(exectedJson);
 
         // Builds sample test data
         OrderProducer orderProducer  = new OrderProducer();
