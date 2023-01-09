@@ -1,0 +1,10 @@
+= Chapter 1
+
+== Guided Exercise: Configuring the Classroom Environment
+
+4.1
+```
+git clone https://github.com/guhilling/AD221-apps
+cd AD221-Apps
+git checkout camel3-quarkus
+```
