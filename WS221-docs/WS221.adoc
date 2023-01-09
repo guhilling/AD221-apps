@@ -1,0 +1,22 @@
+= WS221: Cloud-native Integration with Red Hat Quarkus and Apache Camel
+
+:author: Gunnar Hilling
+:email: gunnar@hilling.de
+:docdate: 9.1.2023
+
+== Introdcution to the Workshop
+
+This workshop is based on the https://www.redhat.com/de/services/training/ad221-cloud-native-integration-with-red-hat-fuse[AD221] course. The main goal of the "original" AD221 as well of this workshop is to lean how to create enterprise integration with Apache Camel.
+
+While the AD221 focuses on using Spring Boot to configure and test the Camel Components in this workshop we're going to use the https://github.com/apache/camel-quarkus[Camel Quarkus] extensions to do the same with https://quarkus.io[Quarkus].
+
+Generally speaking the contents of the chapters and excertices are mainly identical concerning the "Enterprise Integration Patterns" that are demonstrated. However there are some major differences that you should keep in mind:
+
+--
+. The setup of the `RouteBuilder` differs slightly.
+. Some of the components need to be changed as we're using Camel 3 in this workshop while Camel 2 is used inside https://www.redhat.com/en/technologies/jboss-middleware/fuse[Fuse].
+. As we're using https://github.com/apache/camel-quarkus[Camel Quarkus] the dependencies and the setup of the `pom.xml` is very different. But the Camel components we'll need to enable will be largely the same.
+. Unit testing _looks_ very different when using https://github.com/apache/camel-quarkus[Camel Quarkus]. *But* the tests in this workshop use the same building blocks and principles as the tests in the AD221.
+--
+
+Any _major_ differences will be explained in the extra documentation but fundamental changes will only be explained once when they appear first.
