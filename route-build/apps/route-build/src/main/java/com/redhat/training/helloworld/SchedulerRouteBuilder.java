@@ -1,14 +1,10 @@
 package com.redhat.training.helloworld;
 
-import org.springframework.stereotype.Component;
+import org.apache.camel.builder.RouteBuilder;
 
-//TODO: Enable the route by extending the RouteBuilder superclass
-@Component
-public class SchedulerRouteBuilder {
-
-    //TODO: Implement the configure method
+public class SchedulerRouteBuilder extends RouteBuilder {
     @Override
-    public void configure() throws Exception {
-
+    public void configure() {
+        // TODO: create route
     }
 }

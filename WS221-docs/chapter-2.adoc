@@ -89,3 +89,58 @@ public class MyRoute extends RouteBuilder {
 
 == Guided Exercise: Creating Routes Using the Java and XML DSL
 
+(2.) Add the following:
+----
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-log</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-scheduler</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-file</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-direct</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-mock</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-xml-io-dsl</artifactId>
+        </dependency>
+----
+
+(4.) Instead of defining a camel-context.xml here, we create the following `resources/routes/camel-routes.xml`:
+
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://camel.apache.org/schema/spring"
+        xsi:schemaLocation="
+            http://camel.apache.org/schema/spring
+            https://camel.apache.org/schema/spring/camel-spring.xsd">
+
+    <route id="XML DSL route">
+        <from uri="direct:log_body"/>
+        <log message="Exchange body received: ${body}"/>
+        <to uri="mock:next_service"/>
+    </route>
+
+</routes>
+----
+
+(4.1.) Configure the XML-File to use in `resources/application.properties` by adding the following line:
+----
+camel.main.routes-include-pattern = file:src/main/resources/routes/camel-routes.xml
+----
+
+(5.) Start the application by running `mvn quarkus:dev`
+
+Alternatively build the application with 'mvn package', then start with `java -jar target/quarkus-app/quarkus-run.jar`

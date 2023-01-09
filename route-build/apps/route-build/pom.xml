@@ -1,65 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.redhat.training</groupId>
-	<artifactId>route-build</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>route-build</name>
-	<description>GE: Creating Routes using the Java and XML DSL</description>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-		<fuse.version>7.10.0.fuse-sb2-7_10_0-00014-redhat-00001</fuse.version>
-		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.target>11</maven.compiler.target>
-	</properties>
-	<dependencyManagement>
-		<dependencies>
-		  <dependency>
-			<groupId>org.jboss.redhat-fuse</groupId>
-			<artifactId>fuse-springboot-bom</artifactId>
-			<version>${fuse.version}</version>
-			<type>pom</type>
-			<scope>import</scope>
-		  </dependency>
-		</dependencies>
-	  </dependencyManagement>
-	<dependencies>
-		<!-- TODO: add camel dependencies -->
-	</dependencies>
-	<repositories>
-		<repository>
-		  <id>red-hat-ga-repository</id>
-		  <url>https://maven.repository.redhat.com/ga</url>
-		</repository>
-	  </repositories>
-	  <pluginRepositories>
-		<pluginRepository>
-		  <id>red-hat-ga-repository</id>
-		  <url>https://maven.repository.redhat.com/ga</url>
-		</pluginRepository>
-	  </pluginRepositories>
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${maven-compiler-plugin.version}</version>
-			  </plugin>
-			  <plugin>
-				<groupId>org.jboss.redhat-fuse</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>${fuse.version}</version>
-				<executions>
-				  <execution>
-					<goals>
-					  <goal>repackage</goal>
-					</goals>
-				  </execution>
-				</executions>
-			  </plugin>
-		</plugins>
-	</build>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.redhat.training</groupId>
+    <artifactId>route-build</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>route-build</name>
+    <description>GE: Creating Routes using the Java and XML DSL</description>
+
+    <properties>
+        <quarkus.platform.version>2.15.0.Final</quarkus.platform.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <camel-quarkus.platform.version>${quarkus.platform.version}</camel-quarkus.platform.version>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.quarkus.platform</groupId>
+                <artifactId>quarkus-bom</artifactId>
+                <version>${quarkus.platform.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.quarkus.platform</groupId>
+                <artifactId>quarkus-camel-bom</artifactId>
+                <version>${camel-quarkus.platform.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <dependencies>
+        <!-- TODO: add dependencies -->
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+                <configuration>
+                    <failIfNoTests>false</failIfNoTests>
+                    <systemProperties>
+                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                    </systemProperties>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>io.quarkus.platform</groupId>
+                <artifactId>quarkus-maven-plugin</artifactId>
+                <version>${quarkus.platform.version}</version>
+                <executions>
+                    <execution>
+                        <id>build</id>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
