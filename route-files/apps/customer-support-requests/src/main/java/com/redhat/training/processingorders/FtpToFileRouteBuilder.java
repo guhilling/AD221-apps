@@ -2,9 +2,7 @@ package com.redhat.training.processingorders;
 
 import org.apache.camel.builder.RouteBuilder;
 
-// TODO: Enable the route by extending the RouteBuilder superclass
+// TODO: extend RouteBuilder
 public class FtpToFileRouteBuilder {
-
-    // TODO: Implement the configure method
-    //@Override
+    // TODO: implement the configure() method
 }
