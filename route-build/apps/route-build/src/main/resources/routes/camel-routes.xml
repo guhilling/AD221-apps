@@ -5,10 +5,4 @@
             http://camel.apache.org/schema/spring
             https://camel.apache.org/schema/spring/camel-spring.xsd">
 
-    <route id="XML DSL route">
-        <from uri="direct:log_body"/>
-        <log message="Exchange body received: ${body}"/>
-        <to uri="mock:next_service"/>
-    </route>
-
 </routes>

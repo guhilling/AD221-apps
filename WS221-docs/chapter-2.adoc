@@ -143,4 +143,4 @@ camel.main.routes-include-pattern = file:src/main/resources/routes/camel-routes.
 
 (5.) Start the application by running `mvn quarkus:dev`
 
-Alternatively build the application with 'mvn package', then start with `java -jar target/quarkus-app/quarkus-run.jar`
+(5.1.) Additionally build the application with 'mvn package', then start with `java -jar target/quarkus-app/quarkus-run.jar`
