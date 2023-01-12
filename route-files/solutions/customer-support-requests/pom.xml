@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <groupId>com.redhat.training</groupId>
-        <artifactId>camel-quarkus-parent</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../../../pom.xml</relativePath>
-    </parent>
-    
     <modelVersion>4.0.0</modelVersion>
+    <groupId>com.redhat.training</groupId>
+    <version>0.0.1-SNAPSHOT</version>
     <artifactId>processing-orders</artifactId>
     <name>processing-orders</name>
     <description>GE: Processing Orders with the File Component</description>
+
+    <properties>
+        <quarkus.platform.version>2.15.0.Final</quarkus.platform.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <camel-quarkus.platform.version>${quarkus.platform.version}</camel-quarkus.platform.version>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
+    </properties>
 
     <dependencyManagement>
         <dependencies>
