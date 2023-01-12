@@ -3,18 +3,16 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.redhat.training</groupId>
     <artifactId>processing-orders</artifactId>
+    <description>GE: Processing Orders with the File Component</description>
     <version>0.0.1-SNAPSHOT</version>
     <name>processing-orders</name>
-    <description>GE: Processing Orders with the File Component</description>
+
     <properties>
-        <quarkus.platform.version>2.15.1.Final</quarkus.platform.version>
+        <quarkus.platform.version>2.15.0.Final</quarkus.platform.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <camel-quarkus.platform.version>${quarkus.platform.version}</camel-quarkus.platform.version>
-
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.source>11</maven.compiler.source>
-
+        <maven.compiler.target>11</maven.compiler.target>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
     </properties>
@@ -37,6 +35,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
@@ -117,5 +116,5 @@
             </plugin>
         </plugins>
     </build>
-
+    
 </project>
