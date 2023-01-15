@@ -1,15 +1,14 @@
 package com.redhat.training.payslipvalidator.processor;
 
-import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static org.apache.camel.builder.xml.XPathBuilder.xpath;
+import org.apache.camel.Exchange;
+import org.apache.camel.Processor;
+import org.apache.camel.language.xpath.XPathBuilder;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class PriceProcessor implements Processor {
 
@@ -17,12 +16,12 @@ public class PriceProcessor implements Processor {
 	public void process(Exchange exchange) throws Exception {
 
 		double payslipTotal = Double.parseDouble(
-				xpath(
+		XPathBuilder.xpath(
 					"/payslip/totalPayslip/text()"
 				).evaluate(exchange, String.class)
 		);
 
-		NodeList payslipItems = xpath(
+		NodeList payslipItems = XPathBuilder.xpath(
 				"/payslip/payslipItems/node()"
 		).evaluate(exchange, NodeList.class);
 

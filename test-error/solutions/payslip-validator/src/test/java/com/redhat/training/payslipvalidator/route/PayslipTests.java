@@ -1,99 +1,79 @@
 package com.redhat.training.payslipvalidator.route;
 
+import javax.inject.Inject;
+
 import org.apache.camel.CamelContext;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.RoutesBuilder;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.junit.After;
-import org.junit.Before;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
+import org.junit.jupiter.api.BeforeEach;
 
-abstract public class PayslipTests {
+abstract class PayslipTests extends CamelQuarkusTestSupport {
 
-    @Autowired
+    @Inject
     protected ProducerTemplate template;
 
-    @Autowired
+    @Inject
     protected CamelContext context;
 
-    @EndpointInject(uri = "mock:process")
-    MockEndpoint mockProcess;
+    @EndpointInject("mock:process")
+    protected MockEndpoint mockProcess;
 
-    @EndpointInject(uri = "mock:file:error_amount")
-    MockEndpoint fileMockErrorAmount;
+    @EndpointInject("mock:file:error_amount")
+    protected MockEndpoint fileMockErrorAmount;
 
-    @EndpointInject(uri = "mock:file:error_dead_letter")
-    MockEndpoint fileMockErrorDeadLetter;
+    @EndpointInject("mock:file:error_dead_letter")
+    protected MockEndpoint fileMockErrorDeadLetter;
 
-    @EndpointInject(uri = "mock:file:error_price")
-    MockEndpoint fileMockErrorPrice;
+    @EndpointInject("mock:file:error_price")
+    protected MockEndpoint fileMockErrorPrice;
 
-    @EndpointInject(uri = "mock:file:validation_ok")
-    MockEndpoint fileMockValidationOk;
+    @EndpointInject("mock:file:validation_ok")
+    protected MockEndpoint fileMockValidationOk;
 
-    @Before
-    public void setUp() throws Exception {
-        mockRouteEndpoints();
-        context.start();
+    @Override
+    protected RoutesBuilder createRouteBuilder() {
+        return new PayslipValidationRouteBuilder();
     }
 
-    @After
-    public void tearDown() throws Exception {
-        context.stop();
+    @BeforeEach
+    void doAdvice() throws Exception {
+        AdviceWith.adviceWith(context(), "amount-process", PayslipTests::advicePayslipsAmountRoute);
+        AdviceWith.adviceWith(context(), "price-process", PayslipTests::advicePriceProcessRoute);
     }
 
-    protected void mockRouteEndpoints() throws Exception {
-        mockAmountProcessRoute();
-        mockPriceProcessRoute();
+    private static void advicePayslipsAmountRoute(AdviceWithRouteBuilder route) {
+        route.replaceFromWith("direct:payslips-amount");
+
+        route.interceptSendToEndpoint("direct:process")
+             .skipSendToOriginalEndpoint()
+             .to("mock:process");
+
+        route.interceptSendToEndpoint("file://data/validation/error-amount")
+             .skipSendToOriginalEndpoint()
+             .to("mock:file:error_amount");
+
+        // Dead Letter
+        route.interceptSendToEndpoint("file://data/validation/error-dead-letter")
+             .skipSendToOriginalEndpoint()
+             .to("mock:file:error_dead_letter");
+
+        // onException Clause
+        route.interceptSendToEndpoint("file://data/validation/error-price")
+             .skipSendToOriginalEndpoint()
+             .to("mock:file:error_price");
     }
 
-    protected void mockAmountProcessRoute() throws Exception {
-        context.getRouteDefinition("amount-process")
-                .adviceWith(
-                        context,
-                        new AdviceWithRouteBuilder() {
-                            @Override
-                            public void configure() {
-                                replaceFromWith("direct:payslips-amount");
+    private static void advicePriceProcessRoute(AdviceWithRouteBuilder route) {
+        route.replaceFromWith("direct:payslips-price");
 
-                                interceptSendToEndpoint("direct:process")
-                                        .skipSendToOriginalEndpoint()
-                                        .to("mock:process");
-
-                                interceptSendToEndpoint("file://data/validation/error-amount")
-                                        .skipSendToOriginalEndpoint()
-                                        .to("mock:file:error_amount");
-
-                                // Dead Letter
-                                interceptSendToEndpoint("file://data/validation/error-dead-letter")
-                                        .skipSendToOriginalEndpoint()
-                                        .to("mock:file:error_dead_letter");
-
-                                // onException Clause
-                                interceptSendToEndpoint("file://data/validation/error-price")
-                                        .skipSendToOriginalEndpoint()
-                                        .to("mock:file:error_price");
-                            }
-                        }
-                );
-    }
-
-    protected void mockPriceProcessRoute() throws Exception {
-        context.getRouteDefinition("price-process")
-                .adviceWith(
-                        context,
-                        new AdviceWithRouteBuilder() {
-                            @Override
-                            public void configure() {
-                                replaceFromWith("direct:payslips-price");
-
-                                interceptSendToEndpoint("file://data/validation/correct")
-                                        .skipSendToOriginalEndpoint()
-                                        .to("mock:file:validation_ok");
-                            }
-                        }
-                );
+        route.interceptSendToEndpoint("file://data/validation/correct")
+             .skipSendToOriginalEndpoint()
+             .to("mock:file:validation_ok");
     }
 
     protected String validContent() {

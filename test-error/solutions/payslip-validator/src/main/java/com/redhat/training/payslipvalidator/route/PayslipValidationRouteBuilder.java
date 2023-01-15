@@ -3,9 +3,7 @@ package com.redhat.training.payslipvalidator.route;
 import com.redhat.training.payslipvalidator.processor.AmountProcessor;
 import com.redhat.training.payslipvalidator.processor.PriceProcessor;
 import org.apache.camel.builder.RouteBuilder;
-import org.springframework.stereotype.Component;
 
-@Component
 public class PayslipValidationRouteBuilder extends RouteBuilder {
     @Override
     public void configure() throws Exception {
