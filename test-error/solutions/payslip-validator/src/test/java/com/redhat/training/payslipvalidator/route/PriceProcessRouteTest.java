@@ -2,6 +2,8 @@ package com.redhat.training.payslipvalidator.route;
 
 import io.quarkus.test.junit.QuarkusTest;
 
+import org.apache.camel.builder.AdviceWith;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
@@ -48,4 +50,12 @@ class PriceProcessRouteTest extends PayslipTests {
 
         fileMockErrorDeadLetter.assertIsSatisfied();
     }
+
+    @BeforeEach
+    void doAdvice() throws Exception {
+        AdviceWith.adviceWith(context(), "amount-process", PayslipTests::advicePayslipsAmountRoute);
+        AdviceWith.adviceWith(context(), "price-process", PayslipTests::advicePriceProcessRoute);
+    }
+
+
 }

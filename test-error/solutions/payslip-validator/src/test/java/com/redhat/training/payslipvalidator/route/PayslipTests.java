@@ -6,11 +6,9 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.RoutesBuilder;
-import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
-import org.junit.jupiter.api.BeforeEach;
 
 abstract class PayslipTests extends CamelQuarkusTestSupport {
 
@@ -40,13 +38,7 @@ abstract class PayslipTests extends CamelQuarkusTestSupport {
         return new PayslipValidationRouteBuilder();
     }
 
-    @BeforeEach
-    void doAdvice() throws Exception {
-        AdviceWith.adviceWith(context(), "amount-process", PayslipTests::advicePayslipsAmountRoute);
-        AdviceWith.adviceWith(context(), "price-process", PayslipTests::advicePriceProcessRoute);
-    }
-
-    private static void advicePayslipsAmountRoute(AdviceWithRouteBuilder route) {
+    static void advicePayslipsAmountRoute(AdviceWithRouteBuilder route) {
         route.replaceFromWith("direct:payslips-amount");
 
         route.interceptSendToEndpoint("direct:process")
@@ -68,7 +60,7 @@ abstract class PayslipTests extends CamelQuarkusTestSupport {
              .to("mock:file:error_price");
     }
 
-    private static void advicePriceProcessRoute(AdviceWithRouteBuilder route) {
+    static void advicePriceProcessRoute(AdviceWithRouteBuilder route) {
         route.replaceFromWith("direct:payslips-price");
 
         route.interceptSendToEndpoint("file://data/validation/correct")

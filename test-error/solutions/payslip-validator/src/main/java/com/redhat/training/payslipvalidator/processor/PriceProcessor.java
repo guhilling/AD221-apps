@@ -1,11 +1,12 @@
 package com.redhat.training.payslipvalidator.processor;
 
+import static org.apache.camel.language.xpath.XPathBuilder.xpath;
+
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.apache.camel.language.xpath.XPathBuilder;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -15,15 +16,9 @@ public class PriceProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		double payslipTotal = Double.parseDouble(
-		XPathBuilder.xpath(
-					"/payslip/totalPayslip/text()"
-				).evaluate(exchange, String.class)
-		);
+		double payslipTotal = Double.parseDouble(xpath("/payslip/totalPayslip/text()").evaluate(exchange, String.class));
 
-		NodeList payslipItems = XPathBuilder.xpath(
-				"/payslip/payslipItems/node()"
-		).evaluate(exchange, NodeList.class);
+		NodeList payslipItems = xpath("/payslip/payslipItems/node()").evaluate(exchange, NodeList.class);
 
 		Stream<Node> payslipItemsStream = IntStream.range(0, payslipItems.getLength())
 				.mapToObj(payslipItems::item);
