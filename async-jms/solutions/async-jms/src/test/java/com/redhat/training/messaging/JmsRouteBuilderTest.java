@@ -22,14 +22,14 @@ class JmsRouteBuilderTest extends CamelQuarkusTestSupport {
     private static final String MOCK_RESULT_LOG = "mock:result_log";
     private static final String MOCK_RESULT_AMQP = "mock:result_amqp";
 
+    @Produce("jms:queue:jms_order_input")
+    protected ProducerTemplate producerTemplate;
+
     @EndpointInject(MOCK_RESULT_LOG)
     protected MockEndpoint resultLogEndpoint;
 
     @EndpointInject(MOCK_RESULT_AMQP)
     protected MockEndpoint resultAMQPEndpoint;
-
-    @Produce("jms:queue:jms_order_input")
-    protected ProducerTemplate producerTemplate;
 
     @Override
     protected RoutesBuilder createRouteBuilder() {
@@ -47,8 +47,8 @@ class JmsRouteBuilderTest extends CamelQuarkusTestSupport {
         Order testOrder2 = orderProducer.createOrder();
 
         // Sends messages to the start component
-        producerTemplate.sendBody("jms:queue:jms_order_input", testOrder);
-        producerTemplate.sendBody("jms:queue:jms_order_input", testOrder2);
+        producerTemplate.sendBody(testOrder);
+        producerTemplate.sendBody(testOrder2);
 
         // Verifies that a message received
 	    resultLogEndpoint.assertIsSatisfied();

@@ -2,9 +2,6 @@ package com.redhat.training.messaging;
 
 import io.quarkus.test.junit.QuarkusTest;
 
-import javax.inject.Inject;
-
-import org.apache.camel.CamelContext;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
@@ -24,9 +21,6 @@ class AMQPRouteBuilderTest extends CamelQuarkusTestSupport {
     @EndpointInject(MOCK_RESULT)
     protected MockEndpoint resultEndpoint;
 
-    @Inject
-    protected CamelContext context;
-
     @Produce("amqp:queue:amqp_order_input")
     protected ProducerTemplate producerTemplate;
 
@@ -44,7 +38,7 @@ class AMQPRouteBuilderTest extends CamelQuarkusTestSupport {
         resultEndpoint.expectedBodiesReceived(exectedJson);
 
         // Sends a message to the start component
-        producerTemplate.sendBody("amqp:queue:amqp_order_input", exectedJson);
+        producerTemplate.sendBody(exectedJson);
 
         // Verifies that the mock component received 1 message
         resultEndpoint.assertIsSatisfied();

@@ -30,7 +30,7 @@ class OrderLogRouteBuilderTest extends CamelQuarkusTestSupport {
         mockOrderLog.expectedMessageCount(1);
 
         // Sends a message to the start component
-        producerTemplate.sendBody("direct:log_orders", null);
+        producerTemplate.sendBody(null);
 
         // Verifies that the mock component received 1 message
         mockOrderLog.assertIsSatisfied();
