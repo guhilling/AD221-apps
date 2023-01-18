@@ -1,6 +1,7 @@
 package com.redhat.training.emergency;
 
 import io.agroal.api.AgroalDataSource;
+import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -12,6 +13,7 @@ import org.apache.camel.ConsumerTemplate;
 import org.apache.camel.RoutesBuilder;
 import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
+import org.apache.camel.quarkus.test.support.kafka.KafkaTestResource;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import com.redhat.training.emergency.route.EmergencyLocationRouteBuilder;
 
 @QuarkusTest
+@QuarkusTestResource(KafkaTestResource.class)
 class EmergencyLocationRouteBuilderTest extends CamelQuarkusTestSupport {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(EmergencyLocationRouteBuilderTest.class);
