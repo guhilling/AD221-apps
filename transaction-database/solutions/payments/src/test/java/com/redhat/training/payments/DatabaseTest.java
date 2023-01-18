@@ -1,29 +1,28 @@
 package com.redhat.training.payments;
 
+import io.quarkus.test.junit.QuarkusTest;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.apache.camel.ConsumerTemplate;
-import org.apache.camel.test.spring.CamelSpringBootRunner;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-@RunWith( CamelSpringBootRunner.class )
-@SpringBootTest
+@QuarkusTest
 public class DatabaseTest {
 
-	@Autowired
-	private ConsumerTemplate consumerTemplate;
+	@Inject
+	protected ConsumerTemplate consumerTemplate;
 
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
+	@Inject
+	protected JdbcTemplate jdbcTemplate;
 
 	@Before
 	public void waitForRoute()  throws InterruptedException {
