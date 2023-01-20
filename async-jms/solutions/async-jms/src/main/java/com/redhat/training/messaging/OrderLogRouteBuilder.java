@@ -1,13 +1,11 @@
 package com.redhat.training.messaging;
 
 import org.apache.camel.builder.RouteBuilder;
-import org.springframework.stereotype.Component;
 
-@Component
 public class OrderLogRouteBuilder extends RouteBuilder {
 
 	@Override
-	public void configure() throws Exception {
+	public void configure() {
 
 		from("direct:log_orders")
 			.routeId("log-orders")

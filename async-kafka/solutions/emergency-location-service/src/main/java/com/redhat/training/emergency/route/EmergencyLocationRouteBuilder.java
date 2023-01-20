@@ -1,12 +1,10 @@
 package com.redhat.training.emergency.route;
 
-import com.redhat.training.emergency.model.Location;
-
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.BindyType;
-import org.springframework.stereotype.Component;
 
-@Component
+import com.redhat.training.emergency.model.Location;
+
 public class EmergencyLocationRouteBuilder extends RouteBuilder {
 
     @Override
