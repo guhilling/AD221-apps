@@ -1,20 +1,16 @@
 package com.redhat.training.payslipvalidator.route;
 
-import org.apache.camel.test.spring.CamelSpringBootRunner;
-import org.apache.camel.test.spring.UseAdviceWith;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import io.quarkus.test.junit.QuarkusTest;
 
-@RunWith(CamelSpringBootRunner.class)
-@SpringBootTest
-@UseAdviceWith
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class PriceProcessRouteTest extends PayslipTests {
+import org.apache.camel.builder.AdviceWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+@QuarkusTest
+class PriceProcessRouteTest extends PayslipTests {
 
     @Test
-    public void routeSendsMessageToCorrectEndpoint () throws Exception {
+    void routeSendsMessageToCorrectEndpoint () throws Exception {
         fileMockValidationOk.expectedMessageCount(1);
 
         template.sendBody(
@@ -26,7 +22,7 @@ public class PriceProcessRouteTest extends PayslipTests {
     }
 
     @Test
-    public void numberFormatExceptionCapturedByOnExceptionClause () throws Exception {
+    void numberFormatExceptionCapturedByOnExceptionClause () throws Exception {
         fileMockErrorPrice.expectedMessageCount(2);
 
         template.sendBody(
@@ -44,7 +40,7 @@ public class PriceProcessRouteTest extends PayslipTests {
 
 
     @Test
-    public void wrongCalculationExceptionCapturedByDeadLetter () throws Exception {
+    void wrongCalculationExceptionCapturedByDeadLetter () throws Exception {
         fileMockErrorDeadLetter.expectedMessageCount(1);
 
         template.sendBody(
@@ -54,4 +50,12 @@ public class PriceProcessRouteTest extends PayslipTests {
 
         fileMockErrorDeadLetter.assertIsSatisfied();
     }
+
+    @BeforeEach
+    void doAdvice() throws Exception {
+        AdviceWith.adviceWith(context(), "amount-process", PayslipTests::advicePayslipsAmountRoute);
+        AdviceWith.adviceWith(context(), "price-process", PayslipTests::advicePriceProcessRoute);
+    }
+
+
 }

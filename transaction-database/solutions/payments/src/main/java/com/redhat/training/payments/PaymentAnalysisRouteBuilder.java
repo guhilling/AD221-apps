@@ -1,13 +1,11 @@
 package com.redhat.training.payments;
 
 import org.apache.camel.builder.RouteBuilder;
-import org.springframework.stereotype.Component;
 
-@Component
 public class PaymentAnalysisRouteBuilder extends RouteBuilder {
 
     @Override
-    public void configure() throws Exception {
+    public void configure() {
         from("jpa:com.redhat.training.payments.Payment?"
                 + "persistenceUnit=mysql"
                 + "&consumeDelete=false"

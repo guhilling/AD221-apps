@@ -1,43 +1,39 @@
 package com.redhat.training.payslipvalidator.route;
 
-import org.apache.camel.test.spring.CamelSpringBootRunner;
-import org.apache.camel.test.spring.UseAdviceWith;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import io.quarkus.test.junit.QuarkusTest;
 
-@RunWith(CamelSpringBootRunner.class)
-@SpringBootTest
-@UseAdviceWith
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class AmountProcessRouteTest extends PayslipTests {
+import org.apache.camel.builder.AdviceWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+@QuarkusTest
+class AmountProcessRouteTest extends PayslipTests {
 
     @Test
-    public void routeSendsMessageToProcessEndpoint () throws Exception {
+    void routeSendsMessageToProcessEndpoint () throws Exception {
         mockProcess.expectedMessageCount(1);
         fileMockErrorAmount.expectedMessageCount(0);
 
-        template.sendBody(
-                "direct:payslips-amount",
-                validContent()
-        );
+        template.sendBody("direct:payslips-amount", validContent());
 
         mockProcess.assertIsSatisfied();
         fileMockErrorAmount.assertIsSatisfied();
     }
 
     @Test
-    public void routeCatchesNumberFormatException () throws Exception {
+    void routeCatchesNumberFormatException () throws Exception {
         mockProcess.expectedMessageCount(0);
         fileMockErrorAmount.expectedMessageCount(1);
 
-        template.sendBody(
-                "direct:payslips-amount",
-                amountErrorContent()
-        );
+        template.sendBody("direct:payslips-amount", amountErrorContent());
 
         mockProcess.assertIsSatisfied();
         fileMockErrorAmount.assertIsSatisfied();
     }
+
+    @BeforeEach
+    void doAdvice() throws Exception {
+        AdviceWith.adviceWith(context(), "amount-process", PayslipTests::advicePayslipsAmountRoute);
+    }
+
 }

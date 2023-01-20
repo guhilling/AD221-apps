@@ -4,6 +4,7 @@
 
 === Maven Support for Camel Quarkus
 
+[source,xml]
 ----
 <properties>
         <quarkus.platform.version>2.15.1.Final</quarkus.platform.version>
@@ -66,13 +67,13 @@
             </plugin>
         </plugins>
     </build>
-
 ----
 
 === Quarkus Camel
 
 The `RouteBuilder` class becomes even simpler, it will be picked up automatically by Quarkus Camel unless explicitly configured differently:
 
+[source,java]
 ----
 package com.example;
 
@@ -90,6 +91,8 @@ public class MyRoute extends RouteBuilder {
 == Guided Exercise: Creating Routes Using the Java and XML DSL
 
 (2.) Add the following:
+
+[source,xml]
 ----
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
@@ -119,6 +122,7 @@ public class MyRoute extends RouteBuilder {
 
 (4.) Instead of defining a camel-context.xml here, we create the following `resources/routes/camel-routes.xml`:
 
+[source,xml]
 ----
 <?xml version="1.0" encoding="UTF-8"?>
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
