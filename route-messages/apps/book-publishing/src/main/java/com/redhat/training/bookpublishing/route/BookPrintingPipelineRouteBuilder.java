@@ -9,14 +9,5 @@ public class BookPrintingPipelineRouteBuilder extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         // TODO: Create a route for the printing pipeline
-        from("file://data/pipeline/ready-for-printing?noop=true")
-            .routeId("book-printing-pipeline")
-            .setHeader(ROUTING_HEADER).method(DynamicRoutingStrategy.class)
-            .log(String.format(
-                "Sending for printing: ${header.CamelFileName} - " +
-                    "Destination: ${header.%s}",
-                ROUTING_HEADER
-            ))
-        .toD(String.format("${header.%s}", ROUTING_HEADER));
     }
 }

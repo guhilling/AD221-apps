@@ -9,6 +9,7 @@ public class BookReviewPipelineRouteBuilder extends RouteBuilder {
 
     @Override
     public void configure() {
+        // TODO: Create a route for the book review pipeline
         from("file://data/manuscripts?noop=true")
             .routeId("book-review-pipeline")
             .setHeader(ROUTING_HEADER).method(RoutingSlipStrategy.class)

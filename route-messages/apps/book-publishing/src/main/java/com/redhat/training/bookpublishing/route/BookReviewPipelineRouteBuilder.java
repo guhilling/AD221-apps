@@ -9,13 +9,6 @@ public class BookReviewPipelineRouteBuilder extends RouteBuilder {
 
     @Override
     public void configure() {
-        from("file://data/manuscripts?noop=true")
-            .routeId("book-review-pipeline")
-            .setHeader(ROUTING_HEADER).method(RoutingSlipStrategy.class)
-            .log(String.format(
-                "File: ${header.CamelFileName} - Destination: ${header.%s}",
-                ROUTING_HEADER
-            ))
-        .routingSlip(header(ROUTING_HEADER));
+        // TODO: Create a route for the book review pipeline
     }
 }
