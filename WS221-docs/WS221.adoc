@@ -24,3 +24,9 @@ Any _major_ differences will be explained in the extra documentation but fundame
 
 * link:chapter-1.adoc[Chapter 1]
 * link:chapter-2.adoc[Chapter 2]
+
+----
+systemctl --user enable --now podman.socket
+export DOCKER_HOST=unix:///run/user/${UID}/podman/podman.sock
+export TESTCONTAINERS_RYUK_DISABLED=true
+----
