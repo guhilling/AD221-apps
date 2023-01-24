@@ -30,6 +30,7 @@ public class EmergencyLocationRouteBuilder extends RouteBuilder {
         from("file://../resources/data?fileName=locations.csv&noop=true")
         .routeId("emergency-location-route")
         .transform(body())
+        .log("file read and transformed")
         .unmarshal()
         .bindy(BindyType.Csv, Location.class)
         .split(body())
