@@ -77,3 +77,10 @@ from("activemq:queue:orderInput")
     .wireTap("direct:jsonOrderLog")
 .to("mock:fulfillmentSystem");
 ----
+
+=== Guided Exercise: Transforming Messages with Custom Type Converters
+
+Necessary Changes:
+
+- _CommandConfigurationConverter_ needs a public default constructor.
+- The _TypeConverter_ file isn't needed anymore.
