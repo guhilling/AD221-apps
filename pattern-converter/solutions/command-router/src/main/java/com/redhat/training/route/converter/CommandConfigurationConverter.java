@@ -13,8 +13,6 @@ import org.apache.camel.Converter;
 @Converter
 public class CommandConfigurationConverter {
 
-    private CommandConfigurationConverter() {}
-
     // TODO: Add the converter annotation
     @Converter
     public final InputStream convertToCommandConfiguration(CommandConfigurationCSVRecord csvRecord){

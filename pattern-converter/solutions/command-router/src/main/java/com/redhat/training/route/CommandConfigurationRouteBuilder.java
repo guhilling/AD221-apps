@@ -5,6 +5,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.apache.camel.model.dataformat.BindyType;
 
+import com.redhat.training.model.CommandConfiguration;
 import com.redhat.training.model.CommandConfigurationCSVRecord;
 
 public class CommandConfigurationRouteBuilder extends RouteBuilder {
@@ -20,6 +21,7 @@ public class CommandConfigurationRouteBuilder extends RouteBuilder {
         .split(body())
         // TODO: Comment-out or remove the following conversion to JSON
         //.marshal(new JacksonDataFormat(CommandConfigurationCSVRecord.class))
+        .convertBodyTo(CommandConfiguration.class)
         .log("sending body: ${body}")
         .removeHeaders("CamelHttp*")
         .setHeader(Exchange.HTTP_METHOD, constant("POST"))
