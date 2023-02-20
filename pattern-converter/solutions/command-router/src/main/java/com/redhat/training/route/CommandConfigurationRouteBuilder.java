@@ -20,6 +20,7 @@ public class CommandConfigurationRouteBuilder extends RouteBuilder {
         .split(body())
         // TODO: Comment-out or remove the following conversion to JSON
         //.marshal(new JacksonDataFormat(CommandConfigurationCSVRecord.class))
+        .log("sending body: ${body}")
         .removeHeaders("CamelHttp*")
         .setHeader(Exchange.HTTP_METHOD, constant("POST"))
         .setHeader(Exchange.CONTENT_TYPE, constant("text/plain"))
