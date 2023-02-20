@@ -1,47 +1,45 @@
 package com.redhat.training;
 
-import org.apache.camel.CamelContext;
+import io.quarkus.test.junit.QuarkusTest;
+
+import javax.inject.Inject;
+
 import org.apache.camel.ConsumerTemplate;
+import org.apache.camel.RoutesBuilder;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
-import org.apache.camel.model.RouteDefinition;
-import org.apache.camel.test.spring.CamelSpringBootRunner;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-@RunWith(CamelSpringBootRunner.class)
-@SpringBootTest
-public class CommandConfigurationRouteBuilderTest {
+import com.redhat.training.route.CommandConfigurationRouteBuilder;
 
-	@Autowired
-	private ConsumerTemplate consumerTemplate;
+@QuarkusTest
+class CommandConfigurationRouteBuilderTest extends CamelQuarkusTestSupport {
 
-	@Autowired
-	private CamelContext context;
+	@Inject
+	protected ConsumerTemplate consumerTemplate;
 
+	@Override
+	protected RoutesBuilder createRouteBuilder() {
+		return new CommandConfigurationRouteBuilder();
+	}
 
 	@Test
-	public void testRoute() throws Exception {
+	void testRoute() {
+		Assertions.assertEquals(200, consumerTemplate.receive("direct:output").getIn().getBody());
+	}
 
-		RouteDefinition airPurifierConfigRouteDef = context.getRouteDefinition("air-purifier-configuration-route");
+	@BeforeEach
+	void doAdvice() throws Exception {
+		AdviceWith.adviceWith(context(), "air-purifier-configuration-route", CommandConfigurationRouteBuilderTest::adviceRoute);
+	}
 
-		airPurifierConfigRouteDef.adviceWith(context, new AdviceWithRouteBuilder() {
-				@Override
-				public void configure() {
-					interceptSendToEndpoint("direct:logReturnCode")
-					.skipSendToOriginalEndpoint()
-					.to("direct:output");
-				}
-			}
-		);
-
-		context.startRoute(airPurifierConfigRouteDef.getId());
-
-		Assert.assertEquals(200, consumerTemplate.receive("direct:output").getIn().getBody());
-
-		context.stopRoute(airPurifierConfigRouteDef.getId());
+	private static void adviceRoute(AdviceWithRouteBuilder route) {
+		route.interceptSendToEndpoint("direct:logReturnCode")
+			.skipSendToOriginalEndpoint()
+			.to("direct:output");
 	}
 
 }
