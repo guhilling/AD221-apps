@@ -171,4 +171,84 @@ quarkus.qpid-jms.username = admin
 quarkus.qpid-jms.password = admin
 ----
 
+===  Integrating Camel with Kafka
+
+We're going to use a different test setup for this one that will be explained in the guided exercise.
+
+As dependencies we'll only need to add one for Kafka:
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.apache.camel.quarkus</groupId>
+    <artifactId>camel-quarkus-kafka</artifactId>
+</dependency>
+----
+
+Config properties for Kafka in testing will be:
+
+[source,properties]
+----
+camel.component.kafka.configuration.auto-offset-reset=earliest
+camel.component.kafka.configuration.value-deserializer=com.redhat.training.emergency.serde.LocationDeserializer
+----
+
+=== Guided Exercise: Integrating Camel with Kafka
+
+In contrast to the old GE we have two major differences here:
+
+- We're only going to use the Kafka componennt, no jdbc and no mysql database (this will be done in the next chapter).
+- We're using the builtin testcontainers support of Quarkus which simplifies the unit testing of various servers.
+
+Regarding dependencies we're going to use:
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.apache.camel.quarkus</groupId>
+    <artifactId>camel-quarkus-kafka</artifactId>
+</dependency>
+----
+
+and for testing:
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.apache.camel.quarkus</groupId>
+    <artifactId>camel-quarkus-integration-tests-support-kafka</artifactId>
+    <version>2.15.0</version>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>org.testcontainers</groupId>
+    <artifactId>kafka</artifactId>
+    <scope>test</scope>
+    <exclusions>
+        <exclusion>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </exclusion>
+    </exclusions>
+		</dependency>
+----
+
+To use the testcontainers-setup together with _podman_ on our workstation we need to tweek the configuration a little. First the podman socket service needs to be activated as a user service as follows (second command will show the status):
+
+[source,bash]
+----
+systemctl --user enable --now podman.socket
+systemctl status podman.socket
+----
+
+Additionally the following variables need to be set in the shell running the tests. This is best added to _.bashrc_:
+
+[source,bash]
+----
+export DOCKER_HOST=unix:///run/user/$UID/podman/podman.sock
+export TESTCONTAINERS_RYUK_DISABLED=true
+----
+
+On a system running dockerd as probably on you own development systems nothing needs to be tweeked.
+
 

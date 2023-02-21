@@ -43,7 +43,6 @@ public class EmergencyLocationRouteBuilder extends RouteBuilder {
         from("kafka:locations")
         .routeId("kafka-consumer-route")
         .setBody(simple("insert into locations values('${body.latitude}','${body.longitude}')"))
-        .to("jdbc:dataSource")
         .to("direct:logger");
 
         from("direct:logger")

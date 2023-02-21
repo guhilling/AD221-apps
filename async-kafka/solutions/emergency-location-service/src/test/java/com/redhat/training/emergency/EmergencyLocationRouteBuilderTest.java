@@ -24,20 +24,20 @@ import com.redhat.training.emergency.route.EmergencyLocationRouteBuilder;
 @QuarkusTestResource(KafkaTestResource.class)
 class EmergencyLocationRouteBuilderTest extends CamelQuarkusTestSupport {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(EmergencyLocationRouteBuilderTest.class);
-
 	@Inject
 	protected ConsumerTemplate consumerTemplate;
 
 	@Inject
 	protected CamelContext context;
 
-	@Inject
-	protected AgroalDataSource jdbcTemplate;
-
 	@Override
 	protected RoutesBuilder createRouteBuilder() {
 		return new EmergencyLocationRouteBuilder();
+	}
+
+	@Test
+	void emptyTest() {
+		
 	}
 
 	@Test
@@ -50,7 +50,6 @@ class EmergencyLocationRouteBuilderTest extends CamelQuarkusTestSupport {
 	void testKafkaConsumerRoute() throws Exception {
 		configureRoute("kafka-consumer-route");
 		assertErrorNotOccured();
-		assertDBHasRecords();
 	}
 
 	private void configureRoute(String routeId) throws Exception{
@@ -71,11 +70,4 @@ class EmergencyLocationRouteBuilderTest extends CamelQuarkusTestSupport {
 		String body = consumerTemplate.receive("direct:output").getIn().getBody(String.class);
 		assertNotEquals("errorOccured", body); 
 	}
-
-	private void assertDBHasRecords(){
-		//Integer recordCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM locations", Integer.class);
-		//LOGGER.info("The locations table has " + recordCount + " records");
-		//assertTrue(recordCount >= 49);
-	}
-
 }
