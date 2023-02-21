@@ -112,3 +112,11 @@ private void adviceRoute(AdviceWithRouteBuilder route) {
 ----
 
 As in the GE before the _createRouteBuilder()_ method is used to define which Routes to create.
+
+===  Handling Errors in Camel
+
+(Works as described in the student guide.)
+
+=== Guided Exercise: Handling Errors in Camel
+
+(Works as described in the student guide except starting the application using _mvn quarkus:dev_ as usual)
