@@ -78,3 +78,37 @@ protected ConsumerTemplate consumerTemplate;
 
 7.1: Add the _@QuarkusTest_ annotation to the test class.
 
+=== Testing Using Mock Endpoints (Guided Exercise)
+
+
+The endpoints we want to used are injected into Camel 3 tests as follows:
+
+[source,java]
+----
+@EndpointInject("mock:http:localhost")
+protected MockEndpoint httpMockEndpoint;
+
+@EndpointInject("mock:file:out")
+protected MockEndpoint fileMockEndpoint;
+----
+
+The advice code must look as follows when using Camel Quarkus:
+
+[source,java]
+----
+@BeforeEach
+void doAdvice() throws Exception {
+    AdviceWith.adviceWith(context(), "http-route", this::adviceRoute);
+}
+
+private void adviceRoute(AdviceWithRouteBuilder route) {
+    route.interceptSendToEndpoint("http://localhost/greeting")
+         .skipSendToOriginalEndpoint()
+         .to("mock:http:localhost");
+    route.interceptSendToEndpoint("file:out?fileName=response.txt")
+         .skipSendToOriginalEndpoint()
+         .to("mock:file:out");
+}
+----
+
+As in the GE before the _createRouteBuilder()_ method is used to define which Routes to create.
