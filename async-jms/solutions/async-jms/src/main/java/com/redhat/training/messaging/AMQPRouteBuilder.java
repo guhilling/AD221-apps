@@ -1,7 +1,6 @@
 package com.redhat.training.messaging;
 
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.amqp.AMQPComponent;
 
 public class AMQPRouteBuilder extends RouteBuilder {
 
@@ -9,8 +8,6 @@ public class AMQPRouteBuilder extends RouteBuilder {
 
 	@Override
 	public void configure() {
-		AMQPComponent amqp = AMQPComponent.amqpComponent("amqp://localhost:61616");
-
 		// TODO: receive messages from AMQP queue and send  to the log-orders route
 		from("amqp:queue:amqp_order_input")
 			.routeId(ROUTE_NAME)

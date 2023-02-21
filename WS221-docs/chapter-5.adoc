@@ -124,3 +124,51 @@ As in the GE before the _createRouteBuilder()_ method is used to define which Ro
 === Guided Exercise: Handling Errors in Camel
 
 (Works as described in the student guide except starting the application using _mvn quarkus:dev_ as usual)
+
+===  Integrating Services Using JMS
+
+Instead of using the jms and the amqp component we're going to use just the amqp component as this is much easier to configure.
+
+This means we don't need to provide a JmsComponent factory.
+
+Instead we simply configure the amqp component by setting the following tree properties:
+
+[source,properties]
+----
+quarkus.qpid-jms.url = amqp://localhost:5672
+quarkus.qpid-jms.username = admin
+quarkus.qpid-jms.password = admin
+----
+
+== Warning!
+
+Unfortunalety at the moment there is a bug in the test setup so that the tests aren't independent and cannot be run together.
+Instead they need to be run subsequently.
+
+=== Guided Exercise: Integrating Services Using AMQ
+
+5.1
+
+Actually we only need to add one dependency:
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.apache.camel.quarkus</groupId>
+    <artifactId>camel-quarkus-amqp</artifactId>
+</dependency>
+----
+
+Also, we're always using the "amqp" component. So replace _jms:queue_ with _amqp:queue_ in the RouteBuilders.
+
+The connection configuration is the easily done in the application.properties file:
+
+[source,properties]
+----
+quarkus.qpid-jms.url = amqp://localhost:5672
+%test.quarkus.qpid-jms.url = amqp://localhost:61616
+quarkus.qpid-jms.username = admin
+quarkus.qpid-jms.password = admin
+----
+
+
