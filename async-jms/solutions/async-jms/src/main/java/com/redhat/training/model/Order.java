@@ -1,5 +1,7 @@
 package com.redhat.training.model;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
+@RegisterForReflection(serialization = true)
 public class Order implements Serializable {
 
 	private static final long serialVersionUID = 1L;
