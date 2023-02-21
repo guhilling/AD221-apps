@@ -78,4 +78,3 @@ protected ConsumerTemplate consumerTemplate;
 
 7.1: Add the _@QuarkusTest_ annotation to the test class.
 
-8.1:
