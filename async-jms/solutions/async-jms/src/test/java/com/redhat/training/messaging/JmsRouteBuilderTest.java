@@ -22,7 +22,7 @@ class JmsRouteBuilderTest extends CamelQuarkusTestSupport {
     private static final String MOCK_RESULT_LOG = "mock:result_log";
     private static final String MOCK_RESULT_AMQP = "mock:result_amqp";
 
-    @Produce("jms:queue:jms_order_input")
+    @Produce("amqp:queue:jms_order_input")
     protected ProducerTemplate producerTemplate;
 
     @EndpointInject(MOCK_RESULT_LOG)
