@@ -18,7 +18,8 @@ import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-@QuarkusTest
+// TODO: Add annotation
+//@QuarkusTest
 class HtmlRouteBuilderTest extends CamelQuarkusTestSupport {
 
 	public static final File WARNING_FILE = new File("out/latest-warning.txt");
@@ -29,6 +30,7 @@ class HtmlRouteBuilderTest extends CamelQuarkusTestSupport {
 	static {
 		try {
 			warningsHtml = Files.readString(Path.of("", "src/main/resources/test_warnings.html"));
+			// TODO: read errors file
 			errorsHtml = Files.readString(Path.of("", "src/main/resources/test_errors.html"));
 		} catch (IOException ioe) {
 			throw new RuntimeException(ioe);
@@ -41,10 +43,13 @@ class HtmlRouteBuilderTest extends CamelQuarkusTestSupport {
 	@Inject
 	protected ConsumerTemplate consumerTemplate;
 
+	// TODO: provide RouteBuilder to use.
+	/*
 	@Override
 	protected RoutesBuilder createRouteBuilder() {
 		return new HtmlRouteBuilder();
 	}
+	 */
 
 	@BeforeEach
 	void cleanUp() {
@@ -68,12 +73,12 @@ class HtmlRouteBuilderTest extends CamelQuarkusTestSupport {
 
 	@Test
 	void testRouteParsesLatestWarningText() throws Exception {
-		producerTemplate.sendBody( "direct:parseHtmlErrors", warningsHtml );
+		// TODO: send errorsHtml as the body to direct:parseHtmlErrors
 
 		Thread.sleep(2);
 
-		String body = consumerTemplate.receiveBody( "file:out", String.class );
-		assertTrue( body.contains( "DeprecationWarning: Creating a LegacyVersion has been deprecated" ) );
+		// TODO: receive the body from file:out
+		// TODO: assert body contains a portion of the first article
 	}
 
 
