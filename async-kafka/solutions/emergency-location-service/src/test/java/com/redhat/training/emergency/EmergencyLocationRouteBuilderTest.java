@@ -12,8 +12,10 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.ConsumerTemplate;
 import org.apache.camel.RoutesBuilder;
 import org.apache.camel.builder.AdviceWith;
+import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
 import org.apache.camel.quarkus.test.support.kafka.KafkaTestResource;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,33 +39,28 @@ class EmergencyLocationRouteBuilderTest extends CamelQuarkusTestSupport {
 
 	@Test
 	void emptyTest() {
-		
+
 	}
 
 	@Test
-	void testEmergencyLocationRoute() throws Exception {
-		configureRoute("emergency-location-route");
+	void testEmergencyLocationRoute() {
 		assertErrorNotOccured();
 	}
 
-	@Test
-	void testKafkaConsumerRoute() throws Exception {
-		configureRoute("kafka-consumer-route");
-		assertErrorNotOccured();
+	@BeforeEach
+	void doAdvice() throws Exception {
+		AdviceWith.adviceWith(context(), "emergency-location-route",
+							  EmergencyLocationRouteBuilderTest::adviceRoute);
 	}
 
-	private void configureRoute(String routeId) throws Exception{
-		AdviceWith.adviceWith(context(), routeId, route -> {
-			route.replaceFromWith("direct:ready-for-printing");
-			route.interceptSendToEndpoint("file://data/printing-services/technical")
-				.skipSendToOriginalEndpoint()
-				.to("mock:file:technical");
-
-			route.interceptSendToEndpoint("file://data/printing-services/novel")
-				.skipSendToOriginalEndpoint()
-				.to("mock:file:novel");
-			 }
-		);
+	private static void adviceRoute(AdviceWithRouteBuilder route) {
+		route.replaceFromWith("direct:ready-for-printing");
+		route.interceptSendToEndpoint("file://data/printing-services/technical")
+			.skipSendToOriginalEndpoint()
+			.to("mock:file:technical");
+		route.interceptSendToEndpoint("file://data/printing-services/novel")
+			.skipSendToOriginalEndpoint()
+			.to("mock:file:novel");
 	}
 
 	private void assertErrorNotOccured() {
