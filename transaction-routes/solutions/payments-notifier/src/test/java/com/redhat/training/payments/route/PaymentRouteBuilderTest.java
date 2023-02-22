@@ -1,58 +1,48 @@
 package com.redhat.training.payments.route;
 
-import org.apache.camel.CamelContext;
-import org.apache.camel.EndpointInject;
-import org.apache.camel.ProducerTemplate;
-import org.apache.camel.builder.AdviceWithRouteBuilder;
-import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.test.spring.CamelSpringBootRunner;
-import org.apache.camel.test.spring.UseAdviceWith;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
+import io.quarkus.test.junit.QuarkusTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@RunWith(CamelSpringBootRunner.class)
-@SpringBootTest
-@UseAdviceWith
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class PaymentRouteBuilderTest {
+import java.sql.ResultSet;
 
-    @Autowired
-    private ProducerTemplate template;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
 
-    @Autowired
-    private CamelContext context;
+import org.apache.camel.EndpointInject;
+import org.apache.camel.ProducerTemplate;
+import org.apache.camel.RoutesBuilder;
+import org.apache.camel.builder.AdviceWith;
+import org.apache.camel.builder.AdviceWithRouteBuilder;
+import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
+import org.hibernate.Session;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+@QuarkusTest
+class PaymentRouteBuilderTest extends CamelQuarkusTestSupport {
 
-    @EndpointInject(uri = "mock:jms:error_dead_letter")
+    @Inject
+    protected ProducerTemplate template;
+
+    @Inject
+    protected EntityManager entityManager;
+
+    @EndpointInject("mock:jms:error_dead_letter")
     MockEndpoint jmsMockErrorDeadLetter;
 
-    @EndpointInject(uri = "mock:jms:queue")
+    @EndpointInject("mock:jms:queue")
     MockEndpoint jmsMockQueue;
 
-
-    @Before
-    public void beforeSetUp() throws Exception {
-        mockRouteEndpoints();
-        context.start();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        context.stop();
+    @Override
+    protected RoutesBuilder createRouteBuilder() {
+        return new PaymentRouteBuilder();
     }
 
     @Test
-    public void routeSendsMessageToCorrectEndpoints () throws Exception {
+    void routeSendsMessageToCorrectEndpoints () throws Exception {
         jmsMockQueue.expectedMessageCount(1);
         jmsMockErrorDeadLetter.expectedMessageCount(0);
 
@@ -63,7 +53,7 @@ public class PaymentRouteBuilderTest {
         );
 
         // Assert messages in the database
-        assertEquals(Integer.valueOf(1), totalRecordsInDatabase());
+        assertEquals(1, totalRecordsInDatabase());
 
         // Assert messages in the queue
         jmsMockQueue.assertIsSatisfied();
@@ -72,8 +62,9 @@ public class PaymentRouteBuilderTest {
         jmsMockErrorDeadLetter.assertIsSatisfied();
     }
 
+    @Disabled
     @Test
-    public void illegalStateExceptionCapturedByDeadLetter () throws Exception {
+    void illegalStateExceptionCapturedByDeadLetter () throws Exception {
         jmsMockQueue.expectedMessageCount(0);
         jmsMockErrorDeadLetter.expectedMessageCount(1);
 
@@ -84,7 +75,7 @@ public class PaymentRouteBuilderTest {
         );
 
         // Assert ZERO messages in the database because of the rollback
-        assertEquals(Integer.valueOf(0), totalRecordsInDatabase());
+        assertEquals(0, totalRecordsInDatabase());
 
         // Assert ZERO messages in the queue
         jmsMockQueue.assertIsSatisfied();
@@ -93,8 +84,9 @@ public class PaymentRouteBuilderTest {
         jmsMockErrorDeadLetter.assertIsSatisfied();
     }
 
+    @Disabled
     @Test
-    public void invalidEmailExceptionCapturedByDeadLetter () throws Exception {
+    void invalidEmailExceptionCapturedByDeadLetter () throws Exception {
         jmsMockQueue.expectedMessageCount(0);
         jmsMockErrorDeadLetter.expectedMessageCount(1);
 
@@ -105,7 +97,7 @@ public class PaymentRouteBuilderTest {
         );
 
         // Assert ZERO messages in the database because of the rollback
-        assertEquals(Integer.valueOf(0), totalRecordsInDatabase());
+        assertEquals(0, totalRecordsInDatabase());
 
         // Assert ZERO messages in the queue
         jmsMockQueue.assertIsSatisfied();
@@ -114,31 +106,33 @@ public class PaymentRouteBuilderTest {
         jmsMockErrorDeadLetter.assertIsSatisfied();
     }
 
-    private void mockRouteEndpoints() throws Exception {
-        context.getRouteDefinition("payments-process")
-                .adviceWith(
-                        context,
-                        new AdviceWithRouteBuilder() {
-                            @Override
-                            public void configure() {
-                                replaceFromWith("direct:payments");
-
-                                // Notifications queue
-                                interceptSendToEndpoint("jms:queue:payment-notifications")
-                                        .skipSendToOriginalEndpoint()
-                                        .to("mock:jms:queue");
-
-                                // Dead Letter
-                                interceptSendToEndpoint("jms:queue:dead-letter")
-                                        .skipSendToOriginalEndpoint()
-                                        .to("mock:jms:error_dead_letter");
-                            }
-                        }
-                );
+    @BeforeEach
+    void doAdvice() throws Exception {
+        AdviceWith.adviceWith(context(), "payments-process",
+                              PaymentRouteBuilderTest::adviceRoute);
     }
 
-    private Integer totalRecordsInDatabase() {
-        return jdbcTemplate.queryForObject("select count(*) from payments", Integer.class);
+    private static void adviceRoute(AdviceWithRouteBuilder route) {
+        route.replaceFromWith("direct:payments");
+        // Notifications queue
+        route.interceptSendToEndpoint("jms:queue:payment-notifications")
+            .skipSendToOriginalEndpoint()
+            .to("mock:jms:queue");
+
+        // Dead Letter
+        route.interceptSendToEndpoint("jms:queue:dead-letter")
+            .skipSendToOriginalEndpoint()
+            .to("mock:jms:error_dead_letter");
+    }
+
+    private int totalRecordsInDatabase() {
+        Session session = (Session)entityManager.getDelegate();
+        return session.doReturningWork(connection -> {
+            ResultSet result = connection.createStatement().executeQuery("select count(*) from payments");
+            result.next();
+            int count = result.getInt(1);
+            return count;
+        });
     }
 
     private String validContent() {

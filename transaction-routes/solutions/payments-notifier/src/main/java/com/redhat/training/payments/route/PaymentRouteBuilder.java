@@ -1,16 +1,32 @@
 package com.redhat.training.payments.route;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
+import javax.xml.bind.JAXBContext;
+
+import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
+import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.jms.JmsComponent;
+import org.apache.camel.converter.jaxb.JaxbDataFormat;
+
 import com.redhat.training.payments.model.Payment;
 import com.redhat.training.payments.processor.InvalidEmailException;
 import com.redhat.training.payments.processor.NotificationProcessor;
-import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.converter.jaxb.JaxbDataFormat;
-import org.springframework.stereotype.Component;
 
-import javax.xml.bind.JAXBContext;
-
-@Component
 public class PaymentRouteBuilder extends RouteBuilder {
+
+    @Produces
+    @ApplicationScoped
+    public ConnectionFactory connectionFactory() throws JMSException {
+        ActiveMQConnectionFactory cf = new ActiveMQConnectionFactory();
+        cf.setBrokerURL("tcp://localhost:61616");
+        cf.setUser("admin");
+        cf.setPassword("admin");
+        return cf;
+    }
 
     @Override
     public void configure() throws Exception {
