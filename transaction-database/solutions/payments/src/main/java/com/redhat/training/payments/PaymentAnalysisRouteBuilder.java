@@ -10,7 +10,8 @@ public class PaymentAnalysisRouteBuilder extends RouteBuilder {
                 + "persistenceUnit=mysql"
                 + "&consumeDelete=false"
                 + "&maximumResults=5"
-                + "&consumer.delay=3000"
+                + "&initialDelay=100"
+                + "&runLoggingLevel=INFO"
                 + "&consumeLockEntity=false")
             .log("${body}")
             .process(new PaymentFraudAnalyzer())
