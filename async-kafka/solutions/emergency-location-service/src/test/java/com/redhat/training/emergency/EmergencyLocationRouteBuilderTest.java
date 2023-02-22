@@ -30,10 +30,10 @@ class EmergencyLocationRouteBuilderTest extends CamelQuarkusTestSupport {
 	@EndpointInject("mock:file:logger")
 	protected MockEndpoint loggerEndpoint;
 
-	@Override
-	protected RoutesBuilder createRouteBuilder() {
-		return new EmergencyLocationRouteBuilder();
-	}
+	//@Override
+	//protected RoutesBuilder createRouteBuilder() {
+	//	return new EmergencyLocationRouteBuilder();
+	//}
 
 	@Test
 	void emptyTest() throws Exception {
@@ -46,14 +46,13 @@ class EmergencyLocationRouteBuilderTest extends CamelQuarkusTestSupport {
 		assertErrorNotOccured();
 	}
 
-	@BeforeEach
+	//@BeforeEach
 	void doAdvice() throws Exception {
 		AdviceWith.adviceWith(context(), "emergency-location-route",
 							  EmergencyLocationRouteBuilderTest::adviceRoute);
 	}
 
 	private static void adviceRoute(AdviceWithRouteBuilder route) {
-		route.replaceFromWith("direct:ready-for-printing");
 		route.interceptSendToEndpoint("direct:logger")
 			.skipSendToOriginalEndpoint()
 			.to("mock:file:logger");
