@@ -125,7 +125,9 @@ class PaymentRouteBuilderTest extends CamelQuarkusTestSupport {
             .to("mock:jms:error_dead_letter");
     }
 
-    private int totalRecordsInDatabase() {
+    private long totalRecordsInDatabase() {
+        return entityManager.createQuery("SELECT count(p) from Payment p", Long.class).getSingleResult();
+        /*
         Session session = (Session)entityManager.getDelegate();
         return session.doReturningWork(connection -> {
             ResultSet result = connection.createStatement().executeQuery("select count(*) from payments");
@@ -133,6 +135,7 @@ class PaymentRouteBuilderTest extends CamelQuarkusTestSupport {
             int count = result.getInt(1);
             return count;
         });
+         */
     }
 
     private String validContent() {

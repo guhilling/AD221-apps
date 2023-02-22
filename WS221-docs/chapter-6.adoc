@@ -107,4 +107,10 @@ In the following GE not all test cases will be working as expected due to timing
 
 === Guided Exercise: Developing Transactional Routes
 
-Adding any containers is not really necessary except 
+Adding any containers is not really necessary except if we want to test the jms features of the appcliation/routes.
+
+Instead we will create a test database as in the previous lab.
+
+Creating the TransactionPolicy is not necessary in our case.
+
+The two "failure tests" are disables because intercepting the delivery to dead-letter doesn't work as expected. We can test this by creating a proper artemis instance and then checking the message count in the queues.
