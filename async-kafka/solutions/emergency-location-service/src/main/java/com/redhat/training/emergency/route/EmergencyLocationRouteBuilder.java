@@ -46,6 +46,7 @@ public class EmergencyLocationRouteBuilder extends RouteBuilder {
         .to("direct:logger");
 
         from("direct:logger")
+        .routeId("log-route")
         .log("Location data transferred");
 
     }
