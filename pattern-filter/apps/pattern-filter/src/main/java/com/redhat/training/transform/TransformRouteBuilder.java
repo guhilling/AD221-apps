@@ -6,6 +6,8 @@ public class TransformRouteBuilder extends RouteBuilder {
 
     @Override
     public void configure() {
+        /* TODO: Marshal the XML data into JSON */
+        /*
         from("activemq:queue:orderInput")
             .routeId("Transforming Orders")
             .marshal().jaxb()
@@ -15,6 +17,7 @@ public class TransformRouteBuilder extends RouteBuilder {
             .filter().jsonpath("$[?(@.delivered !='true')]")
             .wireTap("direct:jsonOrderLog")
         .to("mock:fulfillmentSystem");
+         */
     }
 
 }

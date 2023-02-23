@@ -9,6 +9,8 @@ public class CombineRouteBuilder extends RouteBuilder {
     public void configure() {
         from( "file:orders/incoming?noop=true" )
         .routeId( "split-combine-pipeline" )
+            // TODO: Split and Aggregate
+            /*
             .split( body().tokenize( SEPARATOR ) )
             .aggregate(constant(true), (oldExchange, newExchange) -> {
                 if (oldExchange == null) {
@@ -21,6 +23,7 @@ public class CombineRouteBuilder extends RouteBuilder {
                 return oldExchange;
             })
             .completionSize( 10 )
+            */
             .to( "file:orders/outgoing?fileName=orders2.csv" );
     }
 }

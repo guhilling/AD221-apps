@@ -20,10 +20,12 @@ class HttpRouteBuilderTest extends CamelQuarkusTestSupport {
     @Inject
     protected ProducerTemplate template;
 
-    @EndpointInject("mock:http:localhost")
+    // TODO: add @EndpointInject annotation
+    // @EndpointInject("mock:http:localhost")
     protected MockEndpoint httpMockEndpoint;
 
-    @EndpointInject("mock:file:out")
+    // TODO: add @EndpointInject annotation
+    // @EndpointInject("mock:file:out")
     protected MockEndpoint fileMockEndpoint;
 
     @Override
@@ -33,14 +35,19 @@ class HttpRouteBuilderTest extends CamelQuarkusTestSupport {
 
     @Test
     void testFileRecievesContentFromHttpClient() throws InterruptedException {
-        httpMockEndpoint.whenAnyExchangeReceived(e -> e.getIn().setBody("Hello test!"));
+        // TODO: add httpMockEndpoint behaviour
+        // httpMockEndpoint.whenAnyExchangeReceived(e -> e.getIn().setBody("Hello test!"));
 
+        // TODO: add fileMockEndpoint expectations
+        /*
         fileMockEndpoint.expectedMessageCount(1);
         fileMockEndpoint.expectedBodiesReceived("Hello test!");
+        */
 
         template.sendBody("direct:start", null);
 
-        fileMockEndpoint.assertIsSatisfied();
+        // TODO: assert fileMockEndpoint
+        // fileMockEndpoint.assertIsSatisfied();
     }
 
     @BeforeEach

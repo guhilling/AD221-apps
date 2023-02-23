@@ -65,7 +65,8 @@
 			<artifactId>camel-quarkus-language</artifactId>
 		</dependency>
 
-		<!-- Test -->
+		<!-- TODO: Add quarkus test dependencies by uncommenting the following code -->
+		<!--
 		<dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-junit5</artifactId>
@@ -76,6 +77,7 @@
 			<artifactId>camel-quarkus-junit5</artifactId>
 			<scope>test</scope>
 		</dependency>
+		-->
 	</dependencies>
 	<build>
 		<plugins>
