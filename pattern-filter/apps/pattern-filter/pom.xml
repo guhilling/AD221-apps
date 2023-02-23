@@ -65,14 +65,20 @@
             <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-xml-io-dsl</artifactId>
         </dependency>
+        <!-- TODO: Add camel-quarkus-xml-jaxb dependency -->
+        <!--
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-xml-jaxb</artifactId>
         </dependency>
+        -->
+        <!-- TODO: Add camel-quarkus-jsonpath dependency -->
+        <!--
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-jsonpath</artifactId>
         </dependency>
+        -->
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-jaxb</artifactId>
