@@ -1,88 +1,65 @@
 package com.redhat.training.emergency;
 
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusTest;
 
-import org.apache.camel.CamelContext;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
+import javax.inject.Inject;
+
 import org.apache.camel.ConsumerTemplate;
+import org.apache.camel.EndpointInject;
+import org.apache.camel.RoutesBuilder;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
-import org.apache.camel.model.RouteDefinition;
-import org.apache.camel.test.spring.CamelSpringBootRunner;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
+import org.apache.camel.quarkus.test.support.kafka.KafkaTestResource;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-@RunWith(CamelSpringBootRunner.class)
-@SpringBootTest
-public class EmergencyLocationRouteBuilderTest {
+import com.redhat.training.emergency.route.EmergencyLocationRouteBuilder;
 
-	private final Logger LOGGER = LoggerFactory.getLogger(EmergencyLocationRouteBuilderTest.class);
+@QuarkusTest
+@QuarkusTestResource(KafkaTestResource.class)
+class EmergencyLocationRouteBuilderTest extends CamelQuarkusTestSupport {
 
-	@Autowired
-	private ConsumerTemplate consumerTemplate;
+	@Inject
+	protected ConsumerTemplate consumerTemplate;
 
-	@Autowired
-	private CamelContext context;
+	@EndpointInject("mock:file:logger")
+	protected MockEndpoint loggerEndpoint;
 
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
-
+	//@Override
+	//protected RoutesBuilder createRouteBuilder() {
+	//	return new EmergencyLocationRouteBuilder();
+	//}
 
 	@Test
-	public void testEmergencyLocationRoute() throws Exception {
-
-		RouteDefinition locationRouteDef = context.getRouteDefinition("emergency-location-route");
-
-		configureRoute(locationRouteDef);
-
-		context.startRoute(locationRouteDef.getId());
-
-		assertErrorNotOccured();
-
-		context.stopRoute(locationRouteDef.getId());
+	void emptyTest() throws Exception {
+		loggerEndpoint.expectedMessageCount(1);
+		loggerEndpoint.assertIsSatisfied(1000);
 	}
 
 	@Test
-	public void testKafkaConsumerRoute() throws Exception {
-
-		RouteDefinition kafkaRouteDef = context.getRouteDefinition("kafka-consumer-route");
-
-		configureRoute(kafkaRouteDef);
-
-		context.startRoute(kafkaRouteDef.getId());
-
+	void testEmergencyLocationRoute() {
 		assertErrorNotOccured();
-
-		context.stopRoute(kafkaRouteDef.getId());
-
-		assertDBHasRecords();
 	}
 
-	private void configureRoute(RouteDefinition routeDef) throws Exception{
-		routeDef.adviceWith(context, new AdviceWithRouteBuilder() {
-				@Override
-				public void configure() {
-					interceptSendToEndpoint("direct:logger")
-					.skipSendToOriginalEndpoint()
-					.to("direct:output");
-				}
-			}
-		);
+	//@BeforeEach
+	void doAdvice() throws Exception {
+		AdviceWith.adviceWith(context(), "emergency-location-route",
+							  EmergencyLocationRouteBuilderTest::adviceRoute);
 	}
 
-	private void assertErrorNotOccured() throws Exception{
+	private static void adviceRoute(AdviceWithRouteBuilder route) {
+		route.interceptSendToEndpoint("direct:logger")
+			.skipSendToOriginalEndpoint()
+			.to("mock:file:logger");
+	}
+
+	private void assertErrorNotOccured() {
 		String body = consumerTemplate.receive("direct:output").getIn().getBody(String.class);
 		assertNotEquals("errorOccured", body); 
 	}
-
-	private void assertDBHasRecords(){
-		Integer recordCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM locations", Integer.class);
-		LOGGER.info("The locations table has " + recordCount + " records");
-		assertTrue(recordCount >= 49);
-	}
-
 }

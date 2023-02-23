@@ -1,11 +1,14 @@
 package com.redhat.training.emergency.model;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import java.io.Serializable;
 
 import org.apache.camel.dataformat.bindy.annotation.CsvRecord;
 import org.apache.camel.dataformat.bindy.annotation.DataField;
 
 @CsvRecord(separator=",", skipField =true)
+@RegisterForReflection
 public class Location implements Serializable {
 
 	private static final long serialVersionUID = -1L;
