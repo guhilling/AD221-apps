@@ -18,7 +18,8 @@ import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-@QuarkusTest
+// TODO: add annotations
+// @QuarkusTest
 class HtmlRouteBuilderTest extends CamelQuarkusTestSupport {
 
 	public static final File WARNING_FILE = new File("out/latest-warning.txt");
@@ -29,7 +30,8 @@ class HtmlRouteBuilderTest extends CamelQuarkusTestSupport {
 	static {
 		try {
 			warningsHtml = Files.readString(Path.of("", "src/main/resources/test_warnings.html"));
-			errorsHtml = Files.readString(Path.of("", "src/main/resources/test_errors.html"));
+			// TODO: read errors file
+			// errorsHtml = Files.readString(Path.of("", "src/main/resources/test_errors.html"));
 		} catch (IOException ioe) {
 			throw new RuntimeException(ioe);
 		}
@@ -52,21 +54,21 @@ class HtmlRouteBuilderTest extends CamelQuarkusTestSupport {
 		ERROR_FILE.delete();
 	}
 
-	@Test
+	// @Test
 	void testRouteWritesLatestWarningToFile() {
 		producerTemplate.sendBody( "direct:parseHtmlErrors", warningsHtml );
 
 		assertTrue(WARNING_FILE.exists(), "out/latest-warning.txt does not exist");
 	}
 
-	@Test
+	// @Test
 	void testRouteWritesLatestErrorToFile() {
 		producerTemplate.sendBody( "direct:parseHtmlErrors", errorsHtml );
 
 		assertTrue(ERROR_FILE.exists(), "out/latest-error.txt does not exist");
 	}
 
-	@Test
+	// @Test
 	void testRouteParsesLatestWarningText() throws Exception {
 		producerTemplate.sendBody( "direct:parseHtmlErrors", warningsHtml );
 
@@ -76,15 +78,17 @@ class HtmlRouteBuilderTest extends CamelQuarkusTestSupport {
 		assertTrue( body.contains( "DeprecationWarning: Creating a LegacyVersion has been deprecated" ) );
 	}
 
-
-	@Test
+	// @Test
 	void testRouteParsesLatestErrorText() throws Exception {
-		producerTemplate.sendBody( "direct:parseHtmlErrors", errorsHtml );
+		// TODO: send errorsHtml as the body to direct:parseHtmlErrors
+		// producerTemplate.sendBody( "direct:parseHtmlErrors", errorsHtml );
 
 		Thread.sleep(2);
 
-		String body = consumerTemplate.receiveBody( "file:out", String.class );
-		assertTrue( body.contains( "Exception occurred during execution on the exchange" ) );
-	}
+		// TODO: receive the body from file:out
+		// String body = consumerTemplate.receiveBody( "file:out", String.class );
 
+		// TODO: assert body contains a portion of the first article
+		// assertTrue( body.contains( "Exception occurred during execution on the exchange" ) );
+	}
 }
