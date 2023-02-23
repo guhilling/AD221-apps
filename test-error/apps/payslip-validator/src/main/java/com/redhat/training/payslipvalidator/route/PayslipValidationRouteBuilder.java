@@ -8,27 +8,30 @@ public class PayslipValidationRouteBuilder extends RouteBuilder {
     @Override
     public void configure() {
         // TODO: Handle errors with the onException clause
+        /*
         onException(NumberFormatException.class)
             .to("file://data/validation/error-price")
             .log("exception")
             .handled(true);
+        */
 
         // TODO: Handle errors with the dead letter channel EIP
         errorHandler(deadLetterChannel("file://data/validation/error-dead-letter")
              .log("error")
              .disableRedelivery());
 
-        // TODO: Add  doTry/Catch block
+        // TODO: Add doTry/Catch block
         from("file://data/payslips?noop=true")
             .routeId("amount-process")
-            .doTry()
+            //.doTry()
                 .process(new AmountProcessor())
                 .log("amount")
                 .to("direct:process")
-            .doCatch(NumberFormatException.class)
+            //.doCatch(NumberFormatException.class)
                 .log("nfe")
                 .to("file://data/validation/error-amount")
-            .endDoTry();
+            //.endDoTry()
+            ;
 
         from("direct:process")
             .log("process pricess")
