@@ -1,41 +1,48 @@
 package com.redhat.training.rest;
 
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.path.json.JsonPath;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.apache.camel.test.spring.CamelSpringBootRunner;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
+import java.util.List;
 
-@SpringBootTest( webEnvironment = WebEnvironment.RANDOM_PORT )
-@RunWith( CamelSpringBootRunner.class )
-public class RestPaymentRouteTest {
+import javax.json.Json;
 
-	@Autowired
-	private TestRestTemplate restTemplate;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.shaded.org.hamcrest.collection.IsCollectionWithSize;
+
+@QuarkusTest
+class RestPaymentRouteTest {
+
 
 	@Test
-	@DirtiesContext
-	public void testPayments() throws Exception {
-		ResponseEntity<Payment[]> response = restTemplate.getForEntity( "/camel/payments", Payment[].class );
-		
-		assertEquals( HttpStatus.OK, response.getStatusCode() );
-		assertEquals( 4, response.getBody().length );
+	void testPayments() {
+		JsonPath result = given()
+						  .get("/payments/")
+						  .then()
+						  .statusCode(200)
+						  .extract()
+						  .body()
+						  .jsonPath();
+		List<Object> resultList = result.getList(".");
+		assertThat(resultList, hasSize(equalTo(4)));
 	}
 
 	@Test
-	@DirtiesContext
-	public void testPayment() throws Exception {
-		ResponseEntity<Payment[]> response = restTemplate.getForEntity( "/camel/payments/12", Payment[].class );
-		
-		assertEquals( HttpStatus.OK, response.getStatusCode() );
-		assertEquals( 1, response.getBody().length );
-		assertEquals( 8474, response.getBody()[0].getOrderId() );
+	void testPayment() {
+		int orderId = given()
+								  .get("/payments/12")
+								  .then()
+								  .statusCode(200)
+								  .extract()
+								  .body()
+								  .jsonPath()
+								  .getInt("[0]['orderId']");
+		assertEquals(orderId, 8474);
 	}
 }
