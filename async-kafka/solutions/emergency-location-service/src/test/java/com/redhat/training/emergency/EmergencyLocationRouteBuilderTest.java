@@ -35,7 +35,7 @@ class EmergencyLocationRouteBuilderTest extends CamelQuarkusTestSupport {
 
 	@Test
 	void emptyTest() throws Exception {
-		loggerEndpoint.expectedMessageCount(1);
+		loggerEndpoint.expectedMessageCount(49);
 		loggerEndpoint.assertIsSatisfied(1000);
 	}
 
