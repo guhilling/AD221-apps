@@ -230,7 +230,7 @@ and for testing:
             <artifactId>junit</artifactId>
         </exclusion>
     </exclusions>
-		</dependency>
+</dependency>
 ----
 
 To use the testcontainers-setup together with _podman_ on our workstation we need to tweek the configuration a little. First the podman socket service needs to be activated as a user service as follows (second command will show the status):
@@ -251,4 +251,14 @@ export TESTCONTAINERS_RYUK_DISABLED=true
 
 On a system running dockerd as probably on you own development systems nothing needs to be tweeked.
 
+In our example we're just forwarding the data to a log output and then replace the log route with:
+
+[source,java]
+----
+route.interceptSendToEndpoint("direct:logger")
+    .skipSendToOriginalEndpoint()
+    .to("mock:file:logger");
+----
+
+So we can test the forwarding of the messages.
 
