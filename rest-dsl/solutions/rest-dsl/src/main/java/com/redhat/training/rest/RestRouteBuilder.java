@@ -9,7 +9,6 @@ public class RestRouteBuilder extends RouteBuilder {
     public void configure() throws Exception {
         // configure rest-dsl
         restConfiguration()
-           	// to use servlet component and run on port 8080
 			.bindingMode(RestBindingMode.json);
 
         // rest services under the payments context-path
