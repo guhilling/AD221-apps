@@ -36,6 +36,9 @@ class EmergencyLocationRouteBuilderTest extends CamelQuarkusTestSupport {
 	@Test
 	void testEmergencyLocationRoute() throws Exception {
 		loggerEndpoint.expectedMessageCount(2);
+		loggerEndpoint.expectedBodiesReceived(
+			"{ \"latitude\" : 52.2782697, \"longitude\" : 8.025496 }",
+			"{ \"latitude\" : 28.1656499, \"longitude\" : -14.2227666 }");
 		loggerEndpoint.assertIsSatisfied(1000);
 	}
 
