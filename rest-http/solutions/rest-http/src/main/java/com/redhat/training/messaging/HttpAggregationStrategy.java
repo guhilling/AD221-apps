@@ -1,7 +1,8 @@
 package com.redhat.training.messaging;
 
-import org.apache.camel.processor.aggregate.AggregationStrategy;
+import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
+
 import com.redhat.training.carbonfootprintservice.CarbonFootprintResponse;
 
 

@@ -1,9 +1,7 @@
 package com.redhat.training.messaging;
 
 import org.apache.camel.builder.RouteBuilder;
-import org.springframework.stereotype.Component;
 
-@Component
 public class EnrichRouteBuilder extends RouteBuilder {
 
 	public static final String ROUTE_NAME = "enrich-route";

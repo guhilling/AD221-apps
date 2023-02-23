@@ -1,10 +1,8 @@
 package com.redhat.training.messaging;
 
 import org.apache.camel.builder.RouteBuilder;
-import org.springframework.stereotype.Component;
 import org.apache.camel.component.cxf.common.message.CxfConstants;
 
-@Component
 public class SoapRouteBuilder extends RouteBuilder {
 
 	public static final String ROUTE_NAME = "soap-route";

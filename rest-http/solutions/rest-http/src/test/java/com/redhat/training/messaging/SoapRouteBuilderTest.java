@@ -1,54 +1,40 @@
 package com.redhat.training.messaging;
 
-import org.apache.camel.ProducerTemplate;
+import io.quarkus.test.junit.QuarkusTest;
+
+import javax.inject.Inject;
+
 import org.apache.camel.EndpointInject;
-import org.apache.camel.CamelContext;
+import org.apache.camel.ProducerTemplate;
+import org.apache.camel.RoutesBuilder;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.test.spring.CamelSpringBootRunner;
+import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
-import org.junit.Before;
-import org.junit.runner.RunWith;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-
-
-@RunWith(CamelSpringBootRunner.class)
-@SpringBootTest(classes = {Application.class},
-    properties = { "camel.springboot.java-routes-include-pattern=**/SoapRoute*"})
-public class SoapRouteBuilderTest {
-
+@QuarkusTest
+class SoapRouteBuilderTest extends CamelQuarkusTestSupport {
 
     private static final String MOCK_RESULT_LOG = "mock:result_log";
 
-    @EndpointInject(uri = MOCK_RESULT_LOG)
-    private MockEndpoint resultLogEndpoint;
+    @EndpointInject(MOCK_RESULT_LOG)
+    protected MockEndpoint resultLogEndpoint;
 
-    @Autowired
-    private CamelContext camelContext;
+    @Inject
+    protected ProducerTemplate producerTemplate;
 
-    @Autowired
-    private ProducerTemplate producerTemplate;
-
-    @Before
-    public void setup() throws Exception {
-
-	camelContext.getRouteDefinition(SoapRouteBuilder.ROUTE_NAME)
-		.autoStartup(true)
-                .adviceWith(camelContext, new AdviceWithRouteBuilder() {
-                    @Override
-                    public void configure() throws Exception {
-                        interceptSendToEndpoint("direct:log_orders")
-                                .skipSendToOriginalEndpoint()
-                                .to(MOCK_RESULT_LOG);
-                    }
-                });
+    @Override
+    protected RoutesBuilder[] createRouteBuilders() {
+        return new RoutesBuilder[]{
+            new SoapRouteBuilder(),
+            new EnrichRouteBuilder()
+        };
     }
 
     @Test
-    public void testSaopRoute() throws Exception {
+    void testSaopRoute() throws Exception {
 
 	resultLogEndpoint.expectedMessageCount(1);
 
@@ -59,6 +45,18 @@ public class SoapRouteBuilderTest {
 
         // Verifies that a message received
 	    resultLogEndpoint.assertIsSatisfied();
+    }
+
+    @BeforeEach
+    void doAdvice() throws Exception {
+        AdviceWith.adviceWith(context(), SoapRouteBuilder.ROUTE_NAME, SoapRouteBuilderTest::adviceRoute);
+    }
+
+    private static void adviceRoute(AdviceWithRouteBuilder route) {
+        route.interceptSendToEndpoint("direct:log_orders")
+             .skipSendToOriginalEndpoint()
+             .to(MOCK_RESULT_LOG);
+
     }
 
 }

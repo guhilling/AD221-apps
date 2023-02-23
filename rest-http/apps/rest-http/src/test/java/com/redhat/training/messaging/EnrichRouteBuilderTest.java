@@ -1,38 +1,36 @@
 package com.redhat.training.messaging;
 
-import org.apache.camel.ProducerTemplate;
+import io.quarkus.test.junit.QuarkusTest;
+
+import javax.inject.Inject;
+
 import org.apache.camel.EndpointInject;
+import org.apache.camel.ProducerTemplate;
+import org.apache.camel.RoutesBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.test.spring.CamelSpringBootRunner;
+import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+@QuarkusTest
+class EnrichRouteBuilderTest extends CamelQuarkusTestSupport {
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+    @EndpointInject("mock:fulfillmentSystem")
+    protected MockEndpoint mockFulfillment;
 
+    @Inject
+    protected ProducerTemplate producerTemplate;
 
-
-@RunWith(CamelSpringBootRunner.class)
-@SpringBootTest(classes = {Application.class},
-    properties = { "camel.springboot.java-routes-include-pattern=**/EnrichRoute*,**/SoapRoute*,**/OrderLogRoute*"})
-public class EnrichRouteBuilderTest {
-
-
-    private static final String MOCK_RESULT_LOG = "mock:result_log";
-
-    @EndpointInject(uri = MOCK_RESULT_LOG)
-    private MockEndpoint resultLogEndpoint;
-
-    @Autowired
-    private ProducerTemplate producerTemplate;
-
-
-   @EndpointInject(uri = "mock:fulfillmentSystem")
-    private MockEndpoint mockFulfillment;
+    @Override
+    protected RoutesBuilder[] createRouteBuilders() {
+        return new RoutesBuilder[]{
+        new SoapRouteBuilder(),
+        new EnrichRouteBuilder(),
+        new OrderLogRouteBuilder()
+        };
+    }
 
     @Test
-    public void testEnrichRoute() throws Exception {
+    void testEnrichRoute() throws Exception {
 
 	    mockFulfillment.expectedMessageCount(2);
 
