@@ -151,4 +151,20 @@ camel.main.routes-include-pattern = file:src/main/resources/routes/camel-routes.
 
 == Guided Exercise: Reading and Writing Files
 
-(9.) Run `mvn quarkus:dev`
+(9.)
+To build and run the application, _without_ executing unit tests, execute:
+[source,bash]
+----
+mvn clean package -DskipTests
+java -jar target/quarkus-app/quarkus-run.jar
+----
+
+To run the application in "Quarkus Dev Mode (https://quarkus.io/guides/maven-tooling)" run:
+
+[source,bash]
+----
+mvn quarkus:dev
+----
+
+This will basically run the application with "dev" profile an rerun the tests on any changes.
+
