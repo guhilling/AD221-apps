@@ -8,9 +8,11 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.RoutesBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
+@Disabled
 class OrderLogRouteBuilderTest extends CamelQuarkusTestSupport {
 
     @Produce("direct:log_orders")

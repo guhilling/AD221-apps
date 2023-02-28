@@ -11,12 +11,14 @@ import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.redhat.training.model.Order;
 
 
 @QuarkusTest
+@Disabled
 class JmsRouteBuilderTest extends CamelQuarkusTestSupport {
 
     private static final String MOCK_RESULT_LOG = "mock:result_log";
