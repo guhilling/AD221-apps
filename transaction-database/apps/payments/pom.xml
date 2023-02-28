@@ -69,14 +69,20 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-jdbc-mysql</artifactId>
         </dependency>
+        <!-- TODO: add JPA component dependency -->
+        <!--
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-jpa</artifactId>
         </dependency>
+        -->
+        <!-- TODO: add SQL component dependency -->
+        <!--
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-sql</artifactId>
         </dependency>
+        -->
 
         <!-- Test -->
         <dependency>
