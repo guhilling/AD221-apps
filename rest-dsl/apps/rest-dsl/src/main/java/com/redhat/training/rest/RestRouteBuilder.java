@@ -8,17 +8,22 @@ public class RestRouteBuilder extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         // configure rest-dsl
+        /* 
         restConfiguration()
 			.bindingMode(RestBindingMode.json);
+        */
 
         // rest services under the payments context-path
+        /*
         rest("/payments")
             .get("/{userId}")
                 .to("direct:getPayment")
             .get("/")
                 .to("direct:allPayments");
-		
+        */
+        
 		// routes that implement the REST services
+        /*
 		from("direct:getPayment")
 			.log("Retrieving payment with id ${header.userId}")
 			.toD("jpa:com.redhat.training.payments.Payment?query=select p from com.redhat.training.rest.Payment p where p.userId = ${header.userId}");
@@ -26,5 +31,6 @@ public class RestRouteBuilder extends RouteBuilder {
 		from("direct:allPayments")
 			.log("Retrieving all payments")
 			.to("jpa:com.redhat.training.payments.Payment?query=select p from com.redhat.training.rest.Payment p");
+        */
     }
 }
