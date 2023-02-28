@@ -40,6 +40,7 @@ public class EmergencyLocationRouteBuilder extends RouteBuilder {
 
 
         // TODO: Consume Location data from `locations` Kafka topic and write it to the database
+        /*
         from("kafka:locations")
         .routeId("kafka-consumer-route")
         .setBody(simple("insert into locations values('${body.latitude}','${body.longitude}')"))
@@ -48,6 +49,6 @@ public class EmergencyLocationRouteBuilder extends RouteBuilder {
         from("direct:logger")
         .routeId("log-route")
         .log("Location data transferred");
-
+        */
     }
 }

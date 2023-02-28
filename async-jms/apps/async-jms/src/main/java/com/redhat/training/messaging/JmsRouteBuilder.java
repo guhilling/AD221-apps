@@ -11,6 +11,7 @@ public class JmsRouteBuilder extends RouteBuilder {
 	public void configure() {
 
 		// TODO: Process Orders
+		/*
 		from("amqp:queue:jms_order_input")
 			.routeId(ROUTE_NAME)
 			.marshal().json(JsonLibrary.Jackson)
@@ -20,5 +21,6 @@ public class JmsRouteBuilder extends RouteBuilder {
 					.to("amqp:queue:amqp_order_input")
 				.when(jsonpath("$[?(@.Delivered == true)]"))
 					.to("direct:log_orders");
+		 */
 	}
 }
