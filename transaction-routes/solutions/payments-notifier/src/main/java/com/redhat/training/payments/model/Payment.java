@@ -18,9 +18,11 @@ public class Payment implements Serializable {
     private Long id;
 
     @XmlElement(name = "user_id")
+    @Column(name = "user_id")
     private Long userId;
 
     @XmlElement(name = "order_id")
+    @Column(name = "order_id")
     private Long orderId;
 
     private Double amount;
