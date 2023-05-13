@@ -19,14 +19,25 @@ Generally speaking the contents of the chapters and excertices are mainly identi
 . Unit testing _looks_ very different when using https://github.com/apache/camel-quarkus[Camel Quarkus]. *But* the tests in this workshop use the same building blocks and principles as the tests in the AD221.
 --
 
+You need to execute _once_:
+----
+systemctl --user enable --now podman.socket
+____
+
+And add the following lines to your .bashrc:
+----
+export DOCKER_HOST=unix:///run/user/${UID}/podman/podman.sock
+export TESTCONTAINERS_RYUK_DISABLED=true
+----
+
 Any _major_ differences will be explained in the extra documentation but fundamental changes will only be explained once when they appear first.
 
 
 * link:chapter-1.adoc[Chapter 1]
 * link:chapter-2.adoc[Chapter 2]
+* link:chapter-3.adoc[Chapter 3]
+* link:chapter-4.adoc[Chapter 4]
+* link:chapter-5.adoc[Chapter 5]
+* link:chapter-6.adoc[Chapter 6]
+* link:chapter-7.adoc[Chapter 7]
 
-----
-systemctl --user enable --now podman.socket
-export DOCKER_HOST=unix:///run/user/${UID}/podman/podman.sock
-export TESTCONTAINERS_RYUK_DISABLED=true
-----
