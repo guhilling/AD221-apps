@@ -20,15 +20,18 @@ Generally speaking the contents of the chapters and excertices are mainly identi
 --
 
 You need to execute _once_:
+
 ----
 systemctl --user enable --now podman.socket
 ____
 
 And add the following lines to your .bashrc:
+
 ----
 export DOCKER_HOST=unix:///run/user/${UID}/podman/podman.sock
 export TESTCONTAINERS_RYUK_DISABLED=true
 ----
+
 
 Any _major_ differences will be explained in the extra documentation but fundamental changes will only be explained once when they appear first.
 
