@@ -23,7 +23,7 @@ You need to execute _once_:
 
 ----
 systemctl --user enable --now podman.socket
-____
+----
 
 And add the following lines to your .bashrc:
 
