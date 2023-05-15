@@ -12,7 +12,7 @@ public class FileRouteBuilder extends RouteBuilder {
 
     @Override
     public void configure() {
-        from( "file:///tmp/orders/incoming?noop=true" )
+        from( "file:orders/incoming?noop=true" )
                 .process(exchange -> {
                     String inputMessage = exchange.getIn().getBody( String.class );
 
@@ -24,6 +24,6 @@ public class FileRouteBuilder extends RouteBuilder {
 
                     exchange.getIn().setBody( processedLines );
                 })
-                .to( "file:///tmp/orders/outgoing?fileName=orders2.csv" );
+                .to( "file:orders/outgoing?fileName=orders2.csv" );
     }
 }
