@@ -8,7 +8,7 @@
   <description>GE: Processing Orders with the File Component</description>
 
   <properties>
-    <quarkus.platform.version>2.15.1.Final</quarkus.platform.version>
+    <quarkus.platform.version>2.15.0.Final</quarkus.platform.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>

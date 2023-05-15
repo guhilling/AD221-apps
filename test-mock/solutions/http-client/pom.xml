@@ -7,7 +7,7 @@
     <name>http-client</name>
     <description>GE: Test routes by using mocks</description>
     <properties>
-        <quarkus.platform.version>2.15.1.Final</quarkus.platform.version>
+        <quarkus.platform.version>2.15.0.Final</quarkus.platform.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <camel-quarkus.platform.version>${quarkus.platform.version}</camel-quarkus.platform.version>
 
