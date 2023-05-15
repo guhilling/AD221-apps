@@ -19,7 +19,7 @@ sample for how to setup Unit Tests with Camel Quarkus.
 </dependency>
 ----
 
-As noted in the Student Guide the libraries are replaced with _camel-test-junit5_ and with _camel-quarkus-junit5_ instead of _camel-test-spring-junit5_ as we're using Camel 3 with the Quarkus integration in this workshop.
+The libraries mentioned in the Student Guide are replaced with _camel-test-junit5_ and with _camel-quarkus-junit5_ instead of _camel-test-spring-junit5_ as we're using Camel 3 with the Quarkus integration in this workshop.
 
 === Configuring Camel Testing in Camel Quarkus
 To create proper tests equivalent to _CamelTestSupport_ we're creating JUnit 5 tests running with the _QuarkusTestExtension_. We're activating it using the _@QuarkusTest_ annotation and the base class _CamelQuarkusTestSupport_ as follows:
