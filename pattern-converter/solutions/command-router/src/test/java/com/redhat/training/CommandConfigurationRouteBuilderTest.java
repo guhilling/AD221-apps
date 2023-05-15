@@ -38,7 +38,7 @@ class CommandConfigurationRouteBuilderTest extends CamelQuarkusTestSupport {
 
 	private static void adviceRoute(AdviceWithRouteBuilder route) {
 		route.interceptSendToEndpoint("direct:logReturnCode")
-			.skipSendToOriginalEndpoint()
+//			.skipSendToOriginalEndpoint()
 			.to("direct:output");
 	}
 
