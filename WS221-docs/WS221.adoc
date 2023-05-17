@@ -35,7 +35,7 @@ Additionally for the testcontainers to work correctly, do _as root_:
 ----
 setenforce 0
 ----
-and or in /etc/selinux/config change “SELINUX=permissive”
+and /etc/selinux/config change “SELINUX=permissive” (in case we reboot the workstation during the workshop)
 
 
 Any _major_ differences will be explained in the extra documentation but fundamental changes will only be explained once when they appear first.
