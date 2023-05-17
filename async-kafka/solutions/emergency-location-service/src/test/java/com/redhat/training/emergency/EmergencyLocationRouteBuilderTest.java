@@ -13,7 +13,9 @@ import org.apache.camel.RoutesBuilder;
 import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.processor.idempotent.kafka.KafkaIdempotentRepository;
 import org.apache.camel.quarkus.test.CamelQuarkusTestSupport;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,6 +27,9 @@ class EmergencyLocationRouteBuilderTest extends CamelQuarkusTestSupport {
 	@Inject
 	protected ConsumerTemplate consumerTemplate;
 
+    @ConfigProperty(name = "camel.component.kafka.brokers")
+    String brokers;
+
 	@EndpointInject("mock:file:logger")
 	protected MockEndpoint loggerEndpoint;
 
@@ -33,12 +38,23 @@ class EmergencyLocationRouteBuilderTest extends CamelQuarkusTestSupport {
 		return new EmergencyLocationRouteBuilder();
 	}
 
+
+    KafkaIdempotentRepository kafkaIdempotentRepository() {
+        return new KafkaIdempotentRepository("locations", brokers);
+    }
+
+
 	@Test
 	void testEmergencyLocationRoute() throws Exception {
-		loggerEndpoint.expectedMessageCount(2);
 		loggerEndpoint.expectedBodiesReceived(
 			"{ \"latitude\" : 52.2782697, \"longitude\" : 8.025496 }",
 			"{ \"latitude\" : 28.1656499, \"longitude\" : -14.2227666 }");
+		loggerEndpoint.assertIsSatisfied(1000);
+	}
+
+	@Test
+	void testEmergencyLocationRouteTwo() throws Exception {
+		loggerEndpoint.expectedMessageCount(2);
 		loggerEndpoint.assertIsSatisfied(1000);
 	}
 
