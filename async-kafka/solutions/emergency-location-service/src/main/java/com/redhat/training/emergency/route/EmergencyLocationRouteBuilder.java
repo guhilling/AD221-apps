@@ -1,27 +1,12 @@
 package com.redhat.training.emergency.route;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Produces;
-import javax.inject.Named;
-
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.BindyType;
-import org.apache.camel.processor.idempotent.kafka.KafkaIdempotentRepository;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.redhat.training.emergency.model.Location;
 
 public class EmergencyLocationRouteBuilder extends RouteBuilder {
 
-    @ConfigProperty(name = "camel.component.kafka.brokers")
-    String brokers;
-
-    @Produces
-    @ApplicationScoped
-    @Named("kafkaIdempotentRepository")
-    KafkaIdempotentRepository kafkaIdempotentRepository() {
-        return new KafkaIdempotentRepository("idempotent-topic", brokers);
-    }
 
     @Override
     public void configure() {
