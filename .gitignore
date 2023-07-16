@@ -39,3 +39,11 @@ build/
 
 ### Python ###
 .venv
+
+### VIM ###
+.*.sw?
+
+### Rendered Materials ###
+WS221-docs/render/html
+WS221-docs/render/pdf
+

@@ -1,10 +1,41 @@
 = WS221: Cloud-native Integration with Red Hat Quarkus and Apache Camel
-
 :author: Gunnar Hilling
 :email: gunnar@hilling.de
 :docdate: 9.1.2023
+:doctype: book
+:toc: left
+:toclevels: 5
+:icons: font
+:source-highlighter: rouge
+:sectnums:
+:sectnumslevels: 5
+:pdf-page-size: A4
+:experimental:
+ifndef::env-name[:relfilesuffix: .adoc]
 
-== Introdcution to the Workshop
+:sectnums!:
+== Copyright Notice ==
+
+Copyright © 2022 Red Hat, Inc.
+
+The contents of this course and all its modules and related materials,
+including handouts to audience members, are copyrighted by Red Hat, Inc.
+
+No part of this publication may be stored in a retrieval system, transmitted,
+distributed, or reproduced in any way, including, but not limited to,
+photocopy, photograph, magnetic, electronic or other record, without the prior
+written permission of Red Hat, Inc.
+
+This instructional program, including all material provided herein, is supplied
+without any guarantees from Red Hat, Inc. Red Hat, Inc. assumes no liability
+for damages or legal action arising from the use or misuse of contents or
+details contained herein.
+
+If you believe Red Hat training materials are being used, copied, or otherwise
+improperly distributed, please send email to training@redhat.com or phone
+toll-free (USA) +1 (866) 626-2994 or +1 (919) 754-3700.
+
+== Introduction to the Workshop
 
 This workshop is based on the https://www.redhat.com/de/services/training/ad221-cloud-native-integration-with-red-hat-fuse[AD221] course. The main goal of the "original" AD221 as well of this workshop is to lean how to create enterprise integration with Apache Camel.
 
@@ -40,12 +71,13 @@ and /etc/selinux/config change “SELINUX=permissive” (in case we reboot the w
 
 Any _major_ differences will be explained in the extra documentation but fundamental changes will only be explained once when they appear first.
 
+:sectnums:
 
-* link:chapter-1.adoc[Chapter 1]
-* link:chapter-2.adoc[Chapter 2]
-* link:chapter-3.adoc[Chapter 3]
-* link:chapter-4.adoc[Chapter 4]
-* link:chapter-5.adoc[Chapter 5]
-* link:chapter-6.adoc[Chapter 6]
-* link:chapter-7.adoc[Chapter 7]
+include::chapters/chapter-1.adoc[]
+include::chapters/chapter-2.adoc[]
+include::chapters/chapter-3.adoc[]
+include::chapters/chapter-4.adoc[]
+include::chapters/chapter-5.adoc[]
+include::chapters/chapter-6.adoc[]
+include::chapters/chapter-7.adoc[]
 

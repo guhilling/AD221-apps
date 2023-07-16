@@ -1,0 +1,12 @@
+== Introducing Red Hat Fuse and Camel ==
+
+=== Guided Exercise: Configuring the Classroom Environment
+
+4.1
+
+[source,bash]
+----
+git clone https://github.com/guhilling/AD221-apps
+cd AD221-apps
+git checkout camel3-quarkus
+----
