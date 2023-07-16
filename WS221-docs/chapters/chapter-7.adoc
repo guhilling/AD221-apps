@@ -1,0 +1,73 @@
+== Building and Consuming REST Services
+
+=== Introducing the REST DSL API
+
+Configuration in Camel Quarkus is even simpler:
+
+[source,java]
+----
+restConfiguration()
+    .bindingMode(RestBindingMode.json);
+----
+
+Component, schema, hostname and port are omitted as all of those are setup by the Quarkus runtime.
+
+The test setup is the same as in the previous GE (see also next GE):
+
+[source,properties]
+----
+quarkus.hibernate-orm.database.generation=drop-and-create
+quarkus.hibernate-orm.log.sql=true
+quarkus.hibernate-orm.sql-load-script=import.sql
+----
+
+The required components (when using mysql) in Camel Quarkus are:
+
+[source,xml]
+----
+    <dependency>
+      <groupId>org.apache.camel.quarkus</groupId>
+      <artifactId>camel-quarkus-rest</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel.quarkus</groupId>
+      <artifactId>camel-quarkus-jackson</artifactId>
+    </dependency>
+----
+
+In the JPA Component the _consumer.delay_ parameter is no longer supported, instead we're going to use _initialDelay_.
+
+=== Guided Exercise: Implementing REST Services with the REST DSL
+
+As in the previous GE we'll use testcontainers to implement the testing, so the pom.xml contains:
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.testcontainers</groupId>
+    <artifactId>testcontainers</artifactId>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>org.testcontainers</groupId>
+    <artifactId>mysql</artifactId>
+    <version>1.15.3</version>
+    <scope>test</scope>
+</dependency>
+----
+
+Remember that the complete configuration is as simple as:
+
+[source,java]
+----
+restConfiguration()
+    .bindingMode(RestBindingMode.json);
+----
+
+The provided tests use _restAssured_ as a REST client testing framework.
+These tests do not contain any mocking and are really runtime tests.
+
+You can also use _mvn quarkus:dev_ which will also automatically start a containerized test database.
+
+===  Consuming HTTP Services
+

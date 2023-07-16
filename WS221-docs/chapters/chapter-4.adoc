@@ -1,0 +1,121 @@
+== Creating Tests for Routes and Error Handling
+
+We'll use the next Guided Exercise (Testing Camel Routes with Camel Test Kit) as
+sample for how to setup Unit Tests with Camel Quarkus.
+
+[source,xml]
+----
+<dependency>
+    <groupId>io.quarkus</groupId>
+    <artifactId>quarkus-junit5</artifactId>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>org.apache.camel.quarkus</groupId>
+    <artifactId>camel-quarkus-junit5</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+The libraries mentioned in the Student Guide are replaced with _camel-test-junit5_ and with _camel-quarkus-junit5_ instead of _camel-test-spring-junit5_ as we're using Camel 3 with the Quarkus integration in this workshop.
+
+=== Configuring Camel Testing in Camel Quarkus
+To create proper tests equivalent to _CamelTestSupport_ we're creating JUnit 5 tests running with the _QuarkusTestExtension_. We're activating it using the _@QuarkusTest_ annotation and the base class _CamelQuarkusTestSupport_ as follows:
+
+[source,java]
+----
+@QuarkusTest
+class HtmlRouteBuilderTest extends CamelQuarkusTestSupport {
+}
+----
+
+To configure the RouteBuilders we want to use and test in our unit tests we need to implement one of the following base methods depending on the need for one or multiple RoutesBuilders:
+
+[source,java]
+----
+protected RoutesBuilder createRouteBuilder() throws Exception;
+
+protected RoutesBuilder[] createRouteBuilders() throws Exception;
+----
+
+It's also necessary to disable the automatic detection of all RouteBuilders that is active in normal operation in camel quarkus. We'll do so by providing an extra _application.properties_ in the test resources:
+
+[source,properties]
+----
+quarkus.camel.routes-discovery.enabled=false
+----
+
+In Quarkus all injections use the _@Inject_ annotation and the fields must not be private:
+
+[source,java]
+----
+@Inject
+protected ProducerTemplate producerTemplate;
+
+@Inject
+protected ConsumerTemplate consumerTemplate;
+----
+
+=== Guided Exercise: Testing Camel Routes with Camel Test Kit
+
+4.1: The necessary dependencies are as follows:
+
+[source,xml]
+----
+<dependency>
+    <groupId>io.quarkus</groupId>
+    <artifactId>quarkus-junit5</artifactId>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>org.apache.camel.quarkus</groupId>
+    <artifactId>camel-quarkus-junit5</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+7.1: Add the _@QuarkusTest_ annotation to the test class.
+
+=== Testing Using Mock Endpoints (Guided Exercise)
+
+
+The endpoints we want to used are injected into Camel 3 tests as follows:
+
+[source,java]
+----
+@EndpointInject("mock:http:localhost")
+protected MockEndpoint httpMockEndpoint;
+
+@EndpointInject("mock:file:out")
+protected MockEndpoint fileMockEndpoint;
+----
+
+The advice code must look as follows when using Camel Quarkus:
+
+[source,java]
+----
+@BeforeEach
+void doAdvice() throws Exception {
+    AdviceWith.adviceWith(context(), "http-route", this::adviceRoute);
+}
+
+private void adviceRoute(AdviceWithRouteBuilder route) {
+    route.interceptSendToEndpoint("http://localhost/greeting")
+         .skipSendToOriginalEndpoint()
+         .to("mock:http:localhost");
+    route.interceptSendToEndpoint("file:out?fileName=response.txt")
+         .skipSendToOriginalEndpoint()
+         .to("mock:file:out");
+}
+----
+
+As in the GE before the _createRouteBuilder()_ method is used to define which Routes to create.
+
+===  Handling Errors in Camel
+
+(Works as described in the student guide.)
+
+=== Guided Exercise: Handling Errors in Camel
+
+(Works as described in the student guide except starting the application using _mvn quarkus:dev_ as usual)
+

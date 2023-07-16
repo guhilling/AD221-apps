@@ -1,0 +1,181 @@
+== Creating Camel Routes
+
+=== Creating Routes Using the Java and XML DSL
+
+==== Maven Support for Camel Quarkus
+
+[source,xml]
+----
+<properties>
+        <quarkus.platform.version>2.15.1.Final</quarkus.platform.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <camel-quarkus.platform.version>${quarkus.platform.version}</camel-quarkus.platform.version>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.quarkus.platform</groupId>
+                <artifactId>quarkus-bom</artifactId>
+                <version>${quarkus.platform.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.quarkus.platform</groupId>
+                <artifactId>quarkus-camel-bom</artifactId>
+                <version>${camel-quarkus.platform.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+...
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-bean</artifactId>
+        </dependency>
+...
+        <!-- Test -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-junit5</artifactId>
+            <scope>test</scope>
+        </dependency>
+...
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+...
+            </plugin>
+            <plugin>
+                <groupId>io.quarkus.platform</groupId>
+                <artifactId>quarkus-maven-plugin</artifactId>
+                <version>${quarkus.platform.version}</version>
+...
+            </plugin>
+        </plugins>
+    </build>
+----
+
+==== Quarkus Camel
+
+The `RouteBuilder` class becomes even simpler, it will be picked up automatically by Quarkus Camel unless explicitly configured differently:
+
+[source,java]
+----
+package com.example;
+
+import org.apache.camel.builder.RouteBuilder;
+
+public class MyRoute extends RouteBuilder {
+
+    @Override
+    public void configure() throws Exception {
+        from("timer:foo").to("log:bar");
+    }
+}
+----
+
+=== Guided Exercise: Creating Routes Using the Java and XML DSL
+
+(2.) Add the following:
+
+[source,xml]
+----
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-log</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-scheduler</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-file</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-direct</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-mock</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-xml-io-dsl</artifactId>
+        </dependency>
+----
+
+(4.) Instead of defining a camel-context.xml here, we create the following `resources/routes/camel-routes.xml`:
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://camel.apache.org/schema/spring"
+        xsi:schemaLocation="
+            http://camel.apache.org/schema/spring
+            https://camel.apache.org/schema/spring/camel-spring.xsd">
+
+    <route id="body logging route">
+        <from uri="direct:log_body"/>
+        <log message="Exchange body received: ${body}"/>
+        <to uri="mock:next_service"/>
+    </route>
+
+</routes>
+----
+
+(4.1.) Configure the XML-File to use in `resources/application.properties` by adding the following line:
+----
+camel.main.routes-include-pattern = file:src/main/resources/routes/camel-routes.xml
+----
+
+(5.) Start the application by running `mvn quarkus:dev`
+
+(5.1.) Additionally build the application with 'mvn package', then start with `java -jar target/quarkus-app/quarkus-run.jar`
+
+=== Guided Exercise: Reading and Writing Files
+
+(2.) Add the following:
+
+[source,xml]
+----
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-ftp</artifactId>
+        </dependency>
+----
+
+
+(9.)
+To build and run the application, _without_ executing unit tests, execute:
+[source,bash]
+----
+mvn clean package -DskipTests
+java -jar target/quarkus-app/quarkus-run.jar
+----
+
+To run the application in "Quarkus Dev Mode (\https://quarkus.io/guides/maven-tooling)" run:
+
+[source,bash]
+----
+mvn quarkus:dev
+----
+
+This will basically run the application with "dev" profile an rerun the tests on any changes.
+
